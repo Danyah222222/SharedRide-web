@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RideApp for Students</title>
+  <style>
+    /* Reset and base style */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Poppins", sans-serif;
+    }
+
+    body {
+      background-color: #e1f4fc; /* baby blue background */
+      height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Top bar */
+    .topbar {
+      width: 100%;
+      height: 60px;
+      background-color: white;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 0 15px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 2;
+    }
+
+    /* Hamburger icon */
+    .hamburger {
+      font-size: 26px;
+      cursor: pointer;
+      color: #333;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: -260px; /* hidden by default */
+      width: 260px;
+      height: 100%;
+      background-color: white;
+      box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+      padding: 70px 20px 20px;
+      transition: left 0.4s ease;
+      z-index: 3;
+    }
+
+    .sidebar.active {
+      left: 0; /* slides in */
+    }
+
+    .sidebar ul {
+      list-style: none;
+    }
+
+    .sidebar ul li {
+      margin: 20px 0;
+      font-size: 18px;
+      color: #333;
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      transition: color 0.3s;
+    }
+
+    .sidebar ul li:hover {
+      color: #00fff2;
+    }
+
+    /* SOS button */
+    .sos-btn {
+      background-color: red;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 80px;
+      height: 80px;
+      font-size: 20px;
+      font-weight: bold;
+      position: absolute;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      cursor: pointer;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+      transition: transform 0.2s;
+    }
+
+    .sos-btn:hover {
+      transform: translateX(-50%) scale(1.05);
+    }
+
+    /* Main content */
+    .main {
+      margin-top: 80px;
+      text-align: center;
+      color: #333;
+    }
+
+    .main h1 {
+      font-size: 28px;
+      color: #005f88;
+    }
+  </style>
+</head>
+<body>
+  <!-- Topbar -->
+  <div class="topbar">
+    <div class="hamburger" id="menuBtn">&#9776;</div>
+  </div>
+
+  <!-- Sidebar -->
+  <div class="sidebar" id="sidebar">
+    <ul>
+
+   <ul>
+  <li><a href="userdetail.html">👤 User Info</a></li>
+  <li><a href="history.html">🕓 Past Rides</a></li>
+  <li><a href="fav-driver.html">❤️ Favorite Driver</a></li>
+  <li><a href="customerService.html">💬 Customer Service</a></li>
+  <li><a href="language.html">🌐 Language Support</a></li>
+  <li><a href="qna.html">❓ Q&A</a></li>
+   <li><a href="review.html">📝 Reviews</a></li>
+</ul>
+
+
+
+    </ul>
+    <button class="sos-btn">SOS</button>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main">
+    <h1>Welcome to RideApp for Students</h1>
+    <p>Press the ☰ menu to see your options.</p>
+  </div>
+
+  <script>
+    const menuBtn = document.getElementById("menuBtn");
+    const sidebar = document.getElementById("sidebar");
+
+    menuBtn.addEventListener("click", () => {
+      sidebar.classList.toggle("active");
+    });
+  </script>
+</body>
+</html>

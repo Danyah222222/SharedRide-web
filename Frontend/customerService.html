@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Customer Service</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+      background: #e0f7fa;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background: #0277bd;
+      color: #fff;
+      padding: 20px 0;
+      text-align: center;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    header h1 {
+      margin: 0;
+      font-size: 24px;
+    }
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #81d4fa;
+      padding: 10px 20px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .navbar .logo {
+      font-weight: bold;
+      color: #01579b;
+      margin: 0;
+    }
+    .nav-links {
+      list-style: none;
+      display: flex;
+      margin: 0;
+      padding: 0;
+    }
+    .nav-links li {
+      margin-left: 20px;
+    }
+    .nav-links a {
+      text-decoration: none;
+      color: #01579b;
+      font-weight: 500;
+      transition: color 0.3s;
+    }
+    .nav-links a:hover {
+      color: #0277bd;
+    }
+    main {
+      display: flex;
+      justify-content: center;
+      margin-top: 50px;
+      padding: 0 20px;
+    }
+    .contact {
+      background: #ffffff;
+      padding: 30px;
+      border-radius: 15px;
+      max-width: 500px;
+      width: 100%;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    }
+    .contact h2 {
+      color: #0277bd;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .contact p {
+      text-align: center;
+      margin-bottom: 25px;
+      color: #01579b;
+    }
+    form input, form textarea {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 15px;
+      border-radius: 8px;
+      border: 1px solid #b3e5fc;
+      background: #e1f5fe;
+      color: #01579b;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.3s;
+    }
+    form input:focus, form textarea:focus {
+      border-color: #0277bd;
+    }
+    form textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+    form button {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 8px;
+      background: #0277bd;
+      color: #fff;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    form button:hover {
+      background: #01579b;
+    }
+    #formMessage {
+      text-align: center;
+      margin-top: 15px;
+      color: #01579b;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>SharedRide – Customer Service</h1>
+  </header>
+
+  <nav class="navbar">
+    <h2 class="logo">SharedRide</h2>
+    <ul class="nav-links">
+      <li><a href="userDetails.html">User Details</a></li>
+      <li><a href="history.html">Ride History</a></li>
+      <li><a href="qna.html">Q&A</a></li>
+      <li><a href="customerService.html">Customer Service</a></li>
+    </ul>
+  </nav>
+
+  <main>
+    <section class="contact">
+      <h2>Need Help?</h2>
+      <p>Fill out this form and our support team will contact you soon.</p>
+
+      <form id="contactForm">
+        <input type="text" placeholder="Your Name" required />
+        <input type="text" placeholder="Student ID" required />
+        <input type="email" placeholder="Email" required />
+        <textarea placeholder="Describe your issue..." required></textarea>
+        <button type="submit">Send</button>
+      </form>
+
+      <p id="formMessage"></p>
+    </section>
+  </main>
+
+  <script src="../script.js"></script>
+</body>
+</html>

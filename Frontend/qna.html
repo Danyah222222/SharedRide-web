@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Q&A</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+      background: #e0f7fa;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background: #0277bd;
+      color: #fff;
+      padding: 20px 0;
+      text-align: center;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    header h1 {
+      margin: 0;
+      font-size: 24px;
+    }
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #81d4fa;
+      padding: 10px 20px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .navbar .logo {
+      font-weight: bold;
+      color: #01579b;
+      margin: 0;
+    }
+    .nav-links {
+      list-style: none;
+      display: flex;
+      margin: 0;
+      padding: 0;
+    }
+    .nav-links li {
+      margin-left: 20px;
+    }
+    .nav-links a {
+      text-decoration: none;
+      color: #01579b;
+      font-weight: 500;
+      transition: color 0.3s;
+    }
+    .nav-links a:hover {
+      color: #0277bd;
+    }
+    main {
+      display: flex;
+      justify-content: center;
+      margin-top: 50px;
+      padding: 0 20px;
+    }
+    .faq {
+      max-width: 700px;
+      width: 100%;
+      background: #ffffff;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    }
+    .faq h2 {
+      text-align: center;
+      color: #0277bd;
+      margin-bottom: 25px;
+    }
+    .question {
+      background: #b3e5fc;
+      padding: 20px;
+      margin-bottom: 15px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    }
+    .question h3 {
+      margin: 0 0 10px 0;
+      color: #01579b;
+    }
+    .question p {
+      margin: 0;
+      color: #01579b;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>SharedRide – FAQ</h1>
+  </header>
+
+  <nav class="navbar">
+    <h2 class="logo">SharedRide</h2>
+    <ul class="nav-links">
+      <li><a href="userDetails.html">User Details</a></li>
+      <li><a href="history.html">Ride History</a></li>
+      <li><a href="qna.html">Q&A</a></li>
+      <li><a href="customerService.html">Customer Service</a></li>
+    </ul>
+  </nav>
+
+  <main>
+    <section class="faq">
+      <h2>Frequently Asked Questions</h2>
+
+      <div class="question">
+        <h3>How do I schedule a ride?</h3>
+        <p>Go to the “Start a Ride” page, choose your time and destination, then click “Schedule”.</p>
+      </div>
+
+      <div class="question">
+        <h3>Can I cancel my ride?</h3>
+        <p>Yes, open your scheduled rides and click “Cancel Ride”.</p>
+      </div>
+
+      <div class="question">
+        <h3>How do I contact my driver?</h3>
+        <p>You can message the driver from the ride details page.</p>
+      </div>
+    </section>
+  </main>
+
+  <script src="../script.js"></script>
+</body>
+</html>

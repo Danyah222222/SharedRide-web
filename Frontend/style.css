@@ -1,0 +1,127 @@
+/* 🌐 Navigation Bar */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #1e1e1e;
+  color: white;
+  padding: 15px 40px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.logo {
+  font-size: 1.5rem;
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+
+.nav-links {
+  list-style: none;
+  display: flex;
+  gap: 25px;
+}
+
+.nav-links li a {
+  color: white;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.nav-links li a:hover {
+  color: #00c4ff;
+}
+
+button {
+  padding: 10px;
+  border: none;
+  border-radius: 8px;
+  background-color: white;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+button:hover {
+  background-color: #81fafa;
+}
+
+/* ==== SIDE MENU ==== */
+.menu {
+  position: fixed;
+  top: 0;
+  left: -250px;
+  width: 250px;
+  height: 100%;
+  background-color: #1e1e1e;
+  color: white;
+  transition: 0.3s;
+  z-index: 1000;
+  padding-top: 50px;
+  box-shadow: 2px 0 5px rgba(0,0,0,0.3);
+}
+
+.menu.open {
+  left: 0;
+}
+
+.menu ul {
+  list-style: none;
+  padding: 0;
+}
+
+.menu ul li {
+  padding: 15px 20px;
+  border-bottom: 1px solid #333;
+}
+
+.menu ul li a {
+  color: white;
+  text-decoration: none;
+  font-size: 1.1em;
+}
+
+.menu ul li a:hover {
+  color: #00c4ff;
+}
+
+/* ==== MENU ICON ==== */
+.menu-icon {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  font-size: 28px;
+  cursor: pointer;
+  color: #1e1e1e;
+  z-index: 1100;
+}
+
+/* ==== SOS BUTTON ==== */
+.sos-btn {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background-color: red;
+  color: white;
+  font-weight: bold;
+  font-size: 18px;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+
+.sos-btn:hover {
+  background-color: #b30000;
+}
+.sidebar ul li a {
+  text-decoration: none;
+  color: #333;
+  width: 100%;
+  display: block;
+}
+
+.sidebar ul li a:hover {
+  color: #00ffea;
+}
