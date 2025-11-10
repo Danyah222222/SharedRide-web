@@ -125,12 +125,6 @@
       margin-bottom: 20px;
     }
 
-    #campus-map {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-    }
-
     /* Search bar */
     #search-bar {
       width: 600px;
@@ -156,8 +150,13 @@
     #start-button:hover {
       background-color: #f0f0f0;
     }
-
   </style>
+
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
 </head>
 <body>
   <!-- Topbar -->
@@ -179,24 +178,21 @@
     <button class="sos-btn">SOS</button>
   </div>
 
-  <!-- Main Content (Map + Search + Start Button) -->
+  <!-- Main Content -->
   <div class="main">
     <!-- Search bar -->
     <input type="text" id="search-bar" placeholder="Enter location..." />
 
-    <!-- Map -->
+    <!-- 🔹 Interactive Map (Leaflet) -->
     <div id="map-container">
-      <img src="images/campus-map.png.png" alt="Campus Map" id="campus-map" />
+      <div id="map" style="height: 100%; width: 100%;"></div>
     </div>
 
-   <!-- Start button -->
-<a href="Ride.html">
-  <button id="start-button">Start</button>
-</a>
-</div>
-</body>
-</html>
-
+    <!-- Start button -->
+    <a href="Ride.html">
+      <button id="start-button">Start</button>
+    </a>
+  </div>
 
   <script>
     const menuBtn = document.getElementById("menuBtn");
@@ -204,6 +200,29 @@
 
     menuBtn.addEventListener("click", () => {
       sidebar.classList.toggle("active");
+    });
+
+    // 🗺️ Initialize Leaflet map
+    var map = L.map('map').setView([24.7136, 46.6753], 13); // Riyadh default
+
+    // Add OpenStreetMap tiles
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a>'
+    }).addTo(map);
+
+    // Add a default marker
+    var marker = L.marker([24.7136, 46.6753]).addTo(map)
+      .bindPopup('<b>Hello!</b><br>This is Riyadh.')
+      .openPopup();
+
+    // Allow clicking on map to add marker
+    map.on('click', function(e) {
+      var lat = e.latlng.lat.toFixed(5);
+      var lng = e.latlng.lng.toFixed(5);
+      L.marker([lat, lng]).addTo(map)
+        .bindPopup("Clicked at: " + lat + ", " + lng)
+        .openPopup();
     });
   </script>
 </body>
