@@ -4,131 +4,43 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Ride Page</title>
+
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+
   <style>
-    /* Reset and base style */
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: Arial, sans-serif;
-    }
+    * { margin:0; padding:0; box-sizing:border-box; font-family: Arial, sans-serif; }
+    body { background-color: #ADD8E6; min-height:100vh; display:flex; flex-direction:column; align-items:center; padding-top:70px; }
 
-    body {
-      background-color: #ADD8E6; /* light blue */
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding-top: 70px; /* space for fixed topbar */
-    }
-
-    /* Top bar */
-    .topbar {
-      width: 100%;
-      height: 60px;
-      background-color: white;
-      display: flex;
-      align-items: center;
-      justify-content: flex-start;
-      padding: 0 15px;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-      position: fixed;
-      top: 0;
-      left: 0;
-      z-index: 2;
-    }
-
-    .hamburger {
-      font-size: 26px;
-      cursor: pointer;
-      color: #333;
-    }
+    /* Topbar */
+    .topbar { width:100%; height:60px; background:white; display:flex; align-items:center; justify-content:flex-start; padding:0 15px; box-shadow:0 2px 6px rgba(0,0,0,0.1); position:fixed; top:0; left:0; z-index:2; }
+    .hamburger { font-size:26px; cursor:pointer; color:#333; }
 
     /* Sidebar */
-    .sidebar {
-      position: fixed;
-      top: 0;
-      left: -260px;
-      width: 260px;
-      height: 100%;
-      background-color: white;
-      box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
-      padding: 70px 20px 20px;
-      transition: left 0.4s ease;
-      z-index: 3;
-    }
+    .sidebar { position:fixed; top:0; left:-260px; width:260px; height:100%; background:white; box-shadow:2px 0 10px rgba(0,0,0,0.1); padding:70px 20px 20px; transition:left 0.4s ease; z-index:3; }
+    .sidebar.active { left:0; }
+    .sidebar ul { list-style:none; }
+    .sidebar ul li { margin:20px 0; font-size:18px; display:flex; align-items:center; cursor:pointer; transition:color 0.3s; }
+    .sidebar ul li:hover { color:#00fff2; }
 
-    .sidebar.active { left: 0; }
+    .sos-btn { background:red; color:white; border:none; border-radius:50%; width:80px; height:80px; font-size:20px; font-weight:bold; position:absolute; bottom:30px; left:50%; transform:translateX(-50%); cursor:pointer; box-shadow:0 4px 8px rgba(0,0,0,0.3); transition: transform 0.2s; }
+    .sos-btn:hover { transform:translateX(-50%) scale(1.05); }
 
-    .sidebar ul { list-style: none; }
+    /* Search bar */
+    #search-container { width:90%; max-width:700px; margin-bottom:10px; }
+    #searchInput { width:100%; padding:8px 12px; font-size:16px; border-radius:6px; border:1px solid #333; }
 
-    .sidebar ul li {
-      margin: 20px 0;
-      font-size: 18px;
-      color: #333;
-      display: flex;
-      align-items: center;
-      cursor: pointer;
-      transition: color 0.3s;
-    }
+    /* Map */
+    #map-container { width:90%; max-width:700px; height:400px; border:2px solid #333; border-radius:12px; overflow:hidden; margin-bottom:20px; }
+    #map { width:100%; height:100%; }
 
-    .sidebar ul li:hover { color: #00fff2; }
+    /* Buttons */
+    #button-container { display:flex; gap:20px; justify-content:center; margin-bottom:20px; }
+    .button { background:white; color:black; border:none; padding:15px 35px; font-size:18px; border-radius:8px; cursor:pointer; transition:background-color 0.3s; }
+    .button:hover { background:#f0f0f0; }
 
-    .sos-btn {
-      background-color: red;
-      color: white;
-      border: none;
-      border-radius: 50%;
-      width: 80px;
-      height: 80px;
-      font-size: 20px;
-      font-weight: bold;
-      position: absolute;
-      bottom: 30px;
-      left: 50%;
-      transform: translateX(-50%);
-      cursor: pointer;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-      transition: transform 0.2s;
-    }
-
-    .sos-btn:hover { transform: translateX(-50%) scale(1.05); }
-
-    /* Map container */
-    #map-container {
-      width: 600px;
-      height: 400px;
-      border: 2px solid #333;
-      border-radius: 12px;
-      overflow: hidden;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      margin-bottom: 20px;
-    }
-
-    #campus-map { width: 100%; height: 100%; object-fit: contain; }
-
-    /* Buttons container */
-    #button-container {
-      display: flex;
-      gap: 20px;
-      justify-content: center;
-      margin-bottom: 20px;
-    }
-
-    .button {
-      background-color: white;
-      color: black;
-      border: none;
-      padding: 15px 35px;
-      font-size: 18px;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: background-color 0.3s;
-    }
-
-    .button:hover { background-color: #f0f0f0; }
+    /* Car emoji icon */
+    .car-emoji-icon { font-size: 24px; text-align:center; line-height:1; }
 
   </style>
 </head>
@@ -150,33 +62,72 @@
       <li><a href="qna.html">❓ Q&A</a></li>
       <li><a href="review.html">📝 Reviews</a></li>
     </ul>
-
-    <!-- ⭐ SOS BUTTON (after fix) -->
     <button class="sos-btn" onclick="sendEmergencyAlert()">SOS</button>
   </div>
 
-  <!-- Main Content -->
+  <!-- Search bar -->
+  <div id="search-container">
+    <input type="text" id="searchInput" placeholder="Enter location">
+  </div>
+
+  <!-- Map -->
   <div id="map-container">
-    <img src="images/campus-map.png.png" alt="Campus Map" id="campus-map" />
+    <div id="map"></div>
   </div>
 
   <!-- Buttons -->
   <div id="button-container">
-    <button class="button" onclick="window.location.href='orderCar.html'">Order a Car Now</button>
+    <button id="orderCarBtn" class="button">Order a Car Now</button>
     <button class="button" onclick="window.location.href='futeureride.html'">Schedule a Ride</button>
   </div>
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
   <script>
     // Sidebar toggle
     const menuBtn = document.getElementById("menuBtn");
     const sidebar = document.getElementById("sidebar");
+    menuBtn.addEventListener("click", () => sidebar.classList.toggle("active"));
 
-    menuBtn.addEventListener("click", () => {
-      sidebar.classList.toggle("active");
+    // Initialize map
+    const campusCenter = [24.7136, 46.6753];
+    const map = L.map('map').setView(campusCenter, 16);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+      maxZoom: 19
+    }).addTo(map);
+
+    // Car markers using 🚗 emoji
+    const carLocations = [
+      [24.7145, 46.6765],
+      [24.7128, 46.6748],
+      [24.7139, 46.6760]
+    ];
+
+    carLocations.forEach((loc, idx) => {
+      L.marker(loc, {
+        icon: L.divIcon({
+          className: 'car-emoji-icon',
+          html: '🚗',
+          iconSize: [30, 30],
+          iconAnchor: [15, 30],
+          popupAnchor: [0, -30]
+        })
+      }).addTo(map).bindPopup(`<b>Car ${idx + 1}</b>`);
+    });
+
+    // Order Car Button
+    const orderBtn = document.getElementById("orderCarBtn");
+    orderBtn.addEventListener("click", () => {
+      const pickupLat = campusCenter[0];
+      const pickupLng = campusCenter[1];
+      window.location.href = `orderCar.html?pickupLat=${pickupLat}&pickupLng=${pickupLng}`;
     });
   </script>
 
-  <!-- ⭐ Connect Backend SOS Logic -->
+  <!-- Backend SOS -->
   <script src="../Backend/emergency.js"></script>
 
 </body>
