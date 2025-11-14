@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Chat with Driver</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #e6f0ff; /* light blue background */
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+    }
+
+    .container {
+      background-color: #ffffff;
+      max-width: 500px;
+      width: 100%;
+      margin-top: 40px;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      color: #0047b3; /* dark blue */
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .messages {
+      border: 1px solid #cce0ff;
+      border-radius: 8px;
+      padding: 10px;
+      height: 300px;
+      overflow-y: auto;
+      margin-bottom: 15px;
+      background-color: #f0f8ff;
+    }
+
+    .message {
+      margin-bottom: 10px;
+      padding: 8px 12px;
+      border-radius: 12px;
+      max-width: 80%;
+      clear: both;
+    }
+
+    .driver {
+      background-color: #cce0ff;
+      float: left;
+    }
+
+    .user {
+      background-color: #99ccff;
+      float: right;
+      text-align: right;
+    }
+
+    .input-container {
+      display: flex;
+      gap: 10px;
+    }
+
+    input[type="text"] {
+      flex: 1;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #b3d1ff;
+    }
+
+    button {
+      background-color: #0047b3;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #003380;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Chat with Driver</h1>
+    <div class="messages" id="chatBox">
+      <div class="message driver">Hi! I'm on my way.</div>
+    </div>
+    <div class="input-container">
+      <input type="text" id="messageInput" placeholder="Type a message...">
+      <button onclick="sendMessage()">Send</button>
+    </div>
+  </div>
+
+  <script>
+    const chatBox = document.getElementById("chatBox");
+    const messageInput = document.getElementById("messageInput");
+
+    function sendMessage() {
+      const text = messageInput.value.trim();
+      if (text === "") return;
+      const userMessage = document.createElement("div");
+      userMessage.classList.add("message", "user");
+      userMessage.textContent = text;
+      chatBox.appendChild(userMessage);
+      messageInput.value = "";
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+  </script>
+</body>
+</html>
