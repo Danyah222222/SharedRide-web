@@ -150,7 +150,9 @@
       <li><a href="qna.html">❓ Q&A</a></li>
       <li><a href="review.html">📝 Reviews</a></li>
     </ul>
-    <button class="sos-btn">SOS</button>
+
+    <!-- ⭐ SOS BUTTON (after fix) -->
+    <button class="sos-btn" onclick="sendEmergencyAlert()">SOS</button>
   </div>
 
   <!-- Main Content -->
@@ -158,11 +160,11 @@
     <img src="images/campus-map.png.png" alt="Campus Map" id="campus-map" />
   </div>
 
-  <!-- Buttons side by side -->
+  <!-- Buttons -->
   <div id="button-container">
     <button class="button" onclick="window.location.href='orderCar.html'">Order a Car Now</button>
     <button class="button" onclick="window.location.href='futeureride.html'">Schedule a Ride</button>
-</div>
+  </div>
 
   <script>
     // Sidebar toggle
@@ -173,6 +175,9 @@
       sidebar.classList.toggle("active");
     });
   </script>
+
+  <!-- ⭐ Connect Backend SOS Logic -->
+  <script src="../Backend/emergency.js"></script>
 
 </body>
 </html>
