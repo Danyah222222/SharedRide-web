@@ -2,103 +2,116 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Chat with Driver</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
-      display: flex;
-      flex-direction: column;
-      height: 100vh;
+      font-family: 'Arial', sans-serif;
+      background-color: #e6f0ff; /* light blue background */
       margin: 0;
-      background-color: #f3f3f3;
-      padding: 16px;
-    }
-    h1 {
-      margin-bottom: 16px;
-    }
-    #chat {
-      flex: 1;
-      overflow-y: auto;
-      margin-bottom: 16px;
+      padding: 0;
       display: flex;
-      flex-direction: column;
-      gap: 8px;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
     }
+
+    .container {
+      background-color: #ffffff;
+      max-width: 500px;
+      width: 100%;
+      margin-top: 40px;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      color: #0047b3; /* dark blue */
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .messages {
+      border: 1px solid #cce0ff;
+      border-radius: 8px;
+      padding: 10px;
+      height: 300px;
+      overflow-y: auto;
+      margin-bottom: 15px;
+      background-color: #f0f8ff;
+    }
+
     .message {
+      margin-bottom: 10px;
       padding: 8px 12px;
       border-radius: 12px;
-      max-width: 70%;
+      max-width: 80%;
+      clear: both;
     }
-    .user {
-      background-color: #007bff;
-      color: white;
-      align-self: flex-end;
-    }
+
     .driver {
-      background-color: #e0e0e0;
-      color: black;
-      align-self: flex-start;
+      background-color: #cce0ff;
+      float: left;
     }
-    #inputArea {
+
+    .user {
+      background-color: #99ccff;
+      float: right;
+      text-align: right;
+    }
+
+    .input-container {
       display: flex;
-      gap: 8px;
+      gap: 10px;
     }
-    #messageInput {
+
+    input[type="text"] {
       flex: 1;
-      padding: 8px;
+      padding: 10px;
       border-radius: 8px;
-      border: 1px solid #ccc;
+      border: 1px solid #b3d1ff;
     }
-    #sendBtn {
-      padding: 8px 16px;
-      border: none;
-      border-radius: 8px;
-      background-color: #007bff;
+
+    button {
+      background-color: #0047b3;
       color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 8px;
       cursor: pointer;
     }
-    #sendBtn:hover {
-      background-color: #0056b3;
+
+    button:hover {
+      background-color: #003380;
     }
   </style>
 </head>
 <body>
-  <h1>Chat with Driver</h1>
-  <div id="chat"></div>
-  <div id="inputArea">
-    <input type="text" id="messageInput" placeholder="Type your message...">
-    <button id="sendBtn">Send</button>
+  <div class="container">
+    <h1>Chat with Driver</h1>
+    <div class="messages" id="chatBox">
+      <div class="message driver">Hi! I'm on my way.</div>
+    </div>
+    <div class="input-container">
+      <input type="text" id="messageInput" placeholder="Type a message...">
+      <button onclick="sendMessage()">Send</button>
+    </div>
   </div>
 
   <script>
-    const chat = document.getElementById("chat");
-    const input = document.getElementById("messageInput");
-    const sendBtn = document.getElementById("sendBtn");
+    const chatBox = document.getElementById("chatBox");
+    const messageInput = document.getElementById("messageInput");
 
-    function addMessage(text, sender) {
-      const div = document.createElement("div");
-      div.className = `message ${sender}`;
-      div.textContent = text;
-      chat.appendChild(div);
-      chat.scrollTop = chat.scrollHeight;
+    function sendMessage() {
+      const text = messageInput.value.trim();
+      if (text === "") return;
+      const userMessage = document.createElement("div");
+      userMessage.classList.add("message", "user");
+      userMessage.textContent = text;
+      chatBox.appendChild(userMessage);
+      messageInput.value = "";
+      chatBox.scrollTop = chatBox.scrollHeight;
     }
-
-    sendBtn.addEventListener("click", () => {
-      const msg = input.value.trim();
-      if (!msg) return;
-      addMessage(msg, "user");
-      input.value = "";
-
-      // Simulate driver reply
-      setTimeout(() => {
-        addMessage("Driver: Received!", "driver");
-      }, 1000);
-    });
-
-    input.addEventListener("keypress", (e) => {
-      if (e.key === "Enter") sendBtn.click();
-    });
   </script>
 </body>
 </html>
