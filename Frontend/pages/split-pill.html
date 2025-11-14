@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Split the Bill</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+      background-color: #f3f3f3;
+      padding: 16px;
+    }
+    h1 {
+      margin-bottom: 24px;
+    }
+    input, button {
+      padding: 8px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      margin-bottom: 12px;
+      width: 200px;
+    }
+    button {
+      background-color: #28a745;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #218838;
+    }
+    #result {
+      margin-top: 16px;
+      padding: 12px;
+      background-color: #e0e0e0;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Split the Bill</h1>
+  <input type="number" id="totalAmount" placeholder="Total Amount">
+  <input type="number" id="people" placeholder="Number of People">
+  <button id="calculateBtn">Calculate</button>
+  <div id="result"></div>
+
+  <script>
+    const totalAmount = document.getElementById("totalAmount");
+    const people = document.getElementById("people");
+    const calculateBtn = document.getElementById("calculateBtn");
+    const result = document.getElementById("result");
+
+    calculateBtn.addEventListener("click", () => {
+      const amount = parseFloat(totalAmount.value);
+      const count = parseInt(people.value);
+
+      if (isNaN(amount) || isNaN(count) || count <= 0) {
+        result.textContent = "Please enter valid numbers.";
+        return;
+      }
+
+      const perPerson = (amount / count).toFixed(2);
+      result.textContent = `Each person pays: $${perPerson}`;
+    });
+  </script>
+</body>
+</html>
