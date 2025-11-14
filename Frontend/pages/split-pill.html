@@ -4,96 +4,71 @@
   <meta charset="UTF-8">
   <title>Split the Bill</title>
   <style>
-    body {
-      font-family: 'Arial', sans-serif;
-      background-color: #e6f0ff; /* light blue background */
-      margin: 0;
-      padding: 0;
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
-      min-height: 100vh;
-    }
-
-    .container {
-      background-color: #ffffff;
-      max-width: 500px;
-      width: 100%;
-      margin-top: 40px;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    }
-
-    h1 {
-      color: #0047b3;
-      text-align: center;
-      margin-bottom: 20px;
-    }
-
-    label {
-      display: block;
-      margin-bottom: 5px;
-      font-weight: bold;
-    }
-
-    input[type="number"] {
-      width: 100%;
-      padding: 10px;
-      border-radius: 8px;
-      border: 1px solid #b3d1ff;
-      margin-bottom: 15px;
-    }
-
-    button {
-      background-color: #0047b3;
-      color: white;
-      border: none;
-      padding: 10px 15px;
-      border-radius: 8px;
-      cursor: pointer;
-      width: 100%;
-    }
-
-    button:hover {
-      background-color: #003380;
-    }
-
-    .result {
-      margin-top: 15px;
-      font-size: 1.2em;
-      color: #0047b3;
-      text-align: center;
-    }
+    body { font-family: Arial; background: #e6f0ff; display: flex; justify-content: center; padding-top: 50px; }
+    .container { background: #fff; padding: 20px; border-radius: 12px; width: 400px; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.1);}
+    h1 { color: #0047b3; margin-bottom: 20px; }
+    .option-btn { background: #0047b3; color: #fff; border: none; padding: 12px 20px; border-radius: 8px; cursor: pointer; margin: 10px 0; width: 80%; }
+    .option-btn:hover { background: #003380; }
+    .form-section { margin-top: 20px; display: none; text-align: left; }
+    label { display: block; margin-bottom: 5px; font-weight: bold; }
+    input[type="number"] { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #b3d1ff; margin-bottom: 15px; }
+    button.submit { background: #0047b3; color: #fff; border: none; padding: 10px 15px; border-radius: 8px; cursor: pointer; width: 100%; }
+    button.submit:hover { background: #003380; }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>Split the Bill</h1>
-    <label for="totalAmount">Total Amount ($):</label>
-    <input type="number" id="totalAmount" placeholder="Enter total amount">
+    <h1>Pay Your Ride</h1>
+    <button class="option-btn" onclick="showSection('split')">Split the Bill</button>
+    <button class="option-btn" onclick="showSection('full')">Pay in Full</button>
 
-    <label for="peopleCount">Number of People:</label>
-    <input type="number" id="peopleCount" placeholder="Enter number of people">
+    <!-- Split Bill -->
+    <div class="form-section" id="split">
+      <label>Total Amount ($):</label>
+      <input type="number" id="totalAmountSplit">
+      <label>Number of People:</label>
+      <input type="number" id="peopleCount">
+      <button class="submit" onclick="sendSplitBill()">Submit</button>
+    </div>
 
-    <button onclick="splitBill()">Calculate</button>
-
-    <div class="result" id="result"></div>
+    <!-- Pay Full -->
+    <div class="form-section" id="full">
+      <label>Total Amount ($):</label>
+      <input type="number" id="totalAmountFull">
+      <button class="submit" onclick="sendFullPay()">Submit</button>
+    </div>
   </div>
 
   <script>
-    function splitBill() {
-      const total = parseFloat(document.getElementById("totalAmount").value);
-      const people = parseInt(document.getElementById("peopleCount").value);
-      const resultDiv = document.getElementById("result");
+    function showSection(section) {
+      document.getElementById('split').style.display = 'none';
+      document.getElementById('full').style.display = 'none';
+      document.getElementById(section).style.display = 'block';
+    }
 
-      if (isNaN(total) || isNaN(people) || people <= 0) {
-        resultDiv.textContent = "Please enter valid numbers.";
-        return;
-      }
+    function sendSplitBill() {
+      const total = document.getElementById("totalAmountSplit").value;
+      const people = document.getElementById("peopleCount").value;
 
-      const perPerson = (total / people).toFixed(2);
-      resultDiv.textContent = `Each person pays: $${perPerson}`;
+      fetch('/api/split-bill', {  // backend endpoint
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ total, people })
+      }).then(res => res.json())
+        .then(data => alert(`Backend response: ${data.message}`))
+        .catch(err => alert("Error sending data!"));
+    }
+
+    function sendFullPay() {
+      const total = document.getElementById("totalAmountFull").value;
+
+      fetch('/api/pay-full', {  // backend endpoint
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ total })
+      }).then(res => res.json())
+        .then(data => alert(`Backend response: ${data.message}`))
+        .catch(err => alert("Error sending data!"));
     }
   </script>
 </body>
