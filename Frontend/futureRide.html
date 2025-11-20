@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Schedule a Ride</title>
+
+  <!-- Leaflet CSS -->
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet/dist/leaflet.css"
+  />
+
+  <style>
+    body {
+      background-color: #d8ecff; /* light blue */
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* Map container (same as your ride page) */
+    #map-container {
+      width: 90%;
+      max-width: 700px;
+      height: 400px;
+      border: 2px solid #333;
+      border-radius: 12px;
+      overflow: hidden;
+      margin: 20px auto;
+    }
+
+    #map {
+      width: 100%;
+      height: 100%;
+    }
+
+    /* Schedule form */
+    .schedule-box {
+      width: 90%;
+      max-width: 300px;
+      background: white;
+      border-radius: 10px;
+      padding: 15px;
+      margin: 20px auto;
+    }
+
+    label {
+      font-weight: bold;
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    input {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 15px;
+      border-radius: 6px;
+      border: 1px solid #333;
+    }
+
+    button {
+      width: 100%;
+      padding: 10px;
+      background: white;
+      color: black;
+      border: 2px solid black;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    button:hover {
+      background: #f1f1f1;
+    }
+
+    h2 {
+      text-align: center;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h2>Schedule Your Ride</h2>
+
+  <!-- Map -->
+  <div id="map-container">
+    <div id="map"></div>
+  </div>
+
+  <!-- Date + Time Picker -->
+  <div class="schedule-box">
+    <label for="rideDate">Choose Ride Date:</label>
+    <input type="date" id="rideDate" />
+
+    <label for="rideTime">Choose Ride Time:</label>
+    <input type="time" id="rideTime" />
+
+    <button onclick="confirmRide()">Schedule Ride</button>
+  </div>
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+  <script>
+    // Map center (same as ride page)
+    const campusCenter = [24.7136, 46.6753];
+
+    // Initialize map
+    const map = L.map('map').setView(campusCenter, 16);
+
+    // OpenStreetMap tiles
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    // Pickup marker (draggable)
+    const pickupMarker = L.marker(campusCenter, { draggable: true })
+      .addTo(map)
+      .bindPopup("Pickup Location");
+
+    let destinationMarker = null;
+
+    // Destination marker added on map click
+    map.on('click', function(e) {
+      const clickedLocation = e.latlng;
+
+      if (!destinationMarker) {
+        destinationMarker = L.marker(clickedLocation, {
+          draggable: true,
+          icon: L.icon({
+            iconUrl: "https://cdn-icons-png.flaticon.com/512/684/684908.png",
+            iconSize: [32, 32]
+          })
+        }).addTo(map).bindPopup("Destination");
+      } else {
+        destinationMarker.setLatLng(clickedLocation);
+      }
+    });
+
+    // Schedule ride button
+    function confirmRide() {
+      const date = document.getElementById('rideDate').value;
+      const time = document.getElementById('rideTime').value;
+
+      if (!date || !time) {
+        alert("Please select a date and time for your ride.");
+        return;
+      }
+
+      if (!destinationMarker) {
+        alert("Please click on the map to choose a destination.");
+        return;
+      }
+
+      alert("Ride Scheduled Successfully!\nDate: " + date + "\nTime: " + time);
+    }
+  </script>
+
+</body>
+</html>
