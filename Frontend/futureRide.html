@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ride Page</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Schedule a Ride</title>
 
   <!-- Leaflet CSS -->
   <link
@@ -12,111 +12,154 @@
   />
 
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif; }
-    body { background-color: #ADD8E6; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding-top: 70px; }
+    body {
+      background-color: #d8ecff; /* light blue */
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
 
-    .topbar { width: 100%; height: 60px; background-color: white; display: flex; align-items: center; justify-content: flex-start; padding: 0 15px; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1); position: fixed; top: 0; left: 0; z-index: 2; }
-    .hamburger { font-size: 26px; cursor: pointer; color: #333; }
+    /* Map container (same as your ride page) */
+    #map-container {
+      width: 90%;
+      max-width: 700px;
+      height: 400px;
+      border: 2px solid #333;
+      border-radius: 12px;
+      overflow: hidden;
+      margin: 20px auto;
+    }
 
-    .sidebar { position: fixed; top: 0; left: -260px; width: 260px; height: 100%; background-color: white; box-shadow: 2px 0 10px rgba(0,0,0,0.1); padding: 70px 20px 20px; transition: left 0.4s ease; z-index: 3; }
-    .sidebar.active { left: 0; }
-    .sidebar ul { list-style: none; }
-    .sidebar ul li { margin: 20px 0; font-size: 18px; color: #333; display: flex; align-items: center; cursor: pointer; transition: color 0.3s; }
-    .sidebar ul li:hover { color: #00fff2; }
+    #map {
+      width: 100%;
+      height: 100%;
+    }
 
-    .sos-btn { background-color: red; color: white; border: none; border-radius: 50%; width: 80px; height: 80px; font-size: 20px; font-weight: bold; position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); cursor: pointer; box-shadow: 0 4px 8px rgba(0,0,0,0.3); transition: transform 0.2s; }
-    .sos-btn:hover { transform: translateX(-50%) scale(1.05); }
+    /* Schedule form */
+    .schedule-box {
+      width: 90%;
+      max-width: 300px;
+      background: white;
+      border-radius: 10px;
+      padding: 15px;
+      margin: 20px auto;
+    }
 
-    #map-container { width: 600px; height: 400px; border: 2px solid #333; border-radius: 12px; overflow: hidden; margin-bottom: 20px; }
-    #map { width: 100%; height: 100%; }
+    label {
+      font-weight: bold;
+      display: block;
+      margin-bottom: 5px;
+    }
 
-    #button-container { display: flex; gap: 20px; justify-content: center; margin-bottom: 20px; }
-    .button { background-color: white; color: black; border: none; padding: 15px 35px; font-size: 18px; border-radius: 8px; cursor: pointer; transition: background-color 0.3s; }
-    .button:hover { background-color: #f0f0f0; }
+    input {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 15px;
+      border-radius: 6px;
+      border: 1px solid #333;
+    }
+
+    button {
+      width: 100%;
+      padding: 10px;
+      background: white;
+      color: black;
+      border: 2px solid black;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    button:hover {
+      background: #f1f1f1;
+    }
+
+    h2 {
+      text-align: center;
+      margin-top: 20px;
+    }
   </style>
 </head>
+
 <body>
 
-  <!-- Topbar -->
-  <div class="topbar">
-    <div class="hamburger" id="menuBtn">&#9776;</div>
-  </div>
+  <h2>Schedule Your Ride</h2>
 
-  <!-- Sidebar -->
-  <div class="sidebar" id="sidebar">
-    <ul>
-      <li><a href="userdetail.html">👤 User Info</a></li>
-      <li><a href="history.html">🕓 Past Rides</a></li>
-      <li><a href="fav-driver.html">❤️ Favorite Driver</a></li>
-      <li><a href="customerService.html">💬 Customer Service</a></li>
-      <li><a href="language.html">🌐 Language Support</a></li>
-      <li><a href="qna.html">❓ Q&A</a></li>
-      <li><a href="review.html">📝 Reviews</a></li>
-    </ul>
-
-    <button class="sos-btn" onclick="sendEmergencyAlert()">SOS</button>
-  </div>
-
-  <!-- Main Content -->
+  <!-- Map -->
   <div id="map-container">
     <div id="map"></div>
   </div>
 
-  <!-- Buttons -->
-  <div id="button-container">
-    <button class="button" onclick="window.location.href='orderCar.html'">Order a Car Now</button>
-<button class="button" onclick="window.location.href='futureRide.html'">Schedule a Ride</button>
+  <!-- Date + Time Picker -->
+  <div class="schedule-box">
+    <label for="rideDate">Choose Ride Date:</label>
+    <input type="date" id="rideDate" />
+
+    <label for="rideTime">Choose Ride Time:</label>
+    <input type="time" id="rideTime" />
+
+    <button onclick="confirmRide()">Schedule Ride</button>
   </div>
 
   <!-- Leaflet JS -->
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
   <script>
-    // Sidebar toggle
-    const menuBtn = document.getElementById("menuBtn");
-    const sidebar = document.getElementById("sidebar");
-    menuBtn.addEventListener("click", () => {
-      sidebar.classList.toggle("active");
+    // Map center (same as ride page)
+    const campusCenter = [24.7136, 46.6753];
+
+    // Initialize map
+    const map = L.map('map').setView(campusCenter, 16);
+
+    // OpenStreetMap tiles
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    // Pickup marker (draggable)
+    const pickupMarker = L.marker(campusCenter, { draggable: true })
+      .addTo(map)
+      .bindPopup("Pickup Location");
+
+    let destinationMarker = null;
+
+    // Destination marker added on map click
+    map.on('click', function(e) {
+      const clickedLocation = e.latlng;
+
+      if (!destinationMarker) {
+        destinationMarker = L.marker(clickedLocation, {
+          draggable: true,
+          icon: L.icon({
+            iconUrl: "https://cdn-icons-png.flaticon.com/512/684/684908.png",
+            iconSize: [32, 32]
+          })
+        }).addTo(map).bindPopup("Destination");
+      } else {
+        destinationMarker.setLatLng(clickedLocation);
+      }
     });
 
-    // Initialize Leaflet map
-    function initCampusMap() {
-      const mapDiv = document.getElementById("map");
-      if (!mapDiv) return;
+    // Schedule ride button
+    function confirmRide() {
+      const date = document.getElementById('rideDate').value;
+      const time = document.getElementById('rideTime').value;
 
-      const campusCenter = [24.7136, 46.6753];
-      const map = L.map("map").setView(campusCenter, 16);
+      if (!date || !time) {
+        alert("Please select a date and time for your ride.");
+        return;
+      }
 
-      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-        maxZoom: 19
-      }).addTo(map);
+      if (!destinationMarker) {
+        alert("Please click on the map to choose a destination.");
+        return;
+      }
 
-      // Example car locations
-      const carLocations = [
-        [24.7145, 46.6765],
-        [24.7128, 46.6748],
-        [24.7139, 46.6760],
-      ];
-
-      carLocations.forEach((loc, i) => {
-        L.marker(loc).addTo(map).bindPopup(`<b>Car ${i+1}</b>`);
-      });
-
-      // Movable marker for pickup location
-      const pickupMarker = L.marker(campusCenter, {draggable: true}).addTo(map);
-      pickupMarker.bindPopup("Drag me to set pickup location").openPopup();
-
-      pickupMarker.on('dragend', function(e){
-        const pos = e.target.getLatLng();
-        console.log("Pickup set at:", pos.lat, pos.lng);
-      });
+      alert("Ride Scheduled Successfully!\nDate: " + date + "\nTime: " + time);
     }
-
-    document.addEventListener("DOMContentLoaded", initCampusMap);
   </script>
 
-  <!-- Connect Backend SOS Logic -->
-  <script src="../Backend/emergency.js"></script>
 </body>
 </html>
