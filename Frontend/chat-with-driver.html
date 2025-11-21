@@ -99,19 +99,57 @@
   </div>
 
   <script>
-    const chatBox = document.getElementById("chatBox");
-    const messageInput = document.getElementById("messageInput");
+    
+  const chatBox = document.getElementById("chatBox");
+  const messageInput = document.getElementById("messageInput");
 
-    function sendMessage() {
-      const text = messageInput.value.trim();
-      if (text === "") return;
-      const userMessage = document.createElement("div");
-      userMessage.classList.add("message", "user");
-      userMessage.textContent = text;
-      chatBox.appendChild(userMessage);
-      messageInput.value = "";
-      chatBox.scrollTop = chatBox.scrollHeight;
-    }
+  function sendMessage() {
+    const text = messageInput.value.trim();
+    if (text === "") return;
+
+    const userMessage = document.createElement("div");
+    userMessage.classList.add("message", "user");
+    userMessage.textContent = text;
+    chatBox.appendChild(userMessage);
+
+    messageInput.value = "";
+    chatBox.scrollTop = chatBox.scrollHeight;
+  }
+
   </script>
+  <script src="http://localhost:3000/socket.io/socket.io.js"></script>
+
+<script>
+  // Connect to backend
+  const socket = io("http://localhost:3000");
+
+  // استقبال الرسالة القادمة من الباك اند
+  socket.on("receive_message", (message) => {
+    const chatBox = document.getElementById("chatBox");
+
+    const msgDiv = document.createElement("div");
+    msgDiv.classList.add("message");
+    msgDiv.classList.add(message.sender === "driver" ? "driver" : "user");
+    msgDiv.textContent = message.text;
+
+    chatBox.appendChild(msgDiv);
+    chatBox.scrollTop = chatBox.scrollHeight;
+  });
+
+  const originalSendMessage = sendMessage;
+
+  sendMessage = function () {
+    const messageInput = document.getElementById("messageInput");
+    const text = messageInput.value.trim();
+    if (text === "") return;
+
+    socket.emit("send_message", {
+      text: text,
+      sender: "user"
+    });
+
+    originalSendMessage();
+  };
+</script>
 </body>
 </html>
