@@ -54,12 +54,10 @@
   </style>
 </head>
 <body>
-
   <!-- Topbar -->
   <div class="topbar">
     <div class="hamburger" id="menuBtn">&#9776;</div>
   </div>
-
   <!-- Sidebar -->
   <div class="sidebar" id="sidebar">
     <ul>
@@ -73,12 +71,10 @@
     </ul>
     <button class="sos-btn" onclick="sendEmergencyAlert()">SOS</button>
   </div>
-
   <!-- Map -->
   <div id="map-container">
     <div id="map"></div>
   </div>
-
   <!-- Pickup / Drop-off -->
   <div class="form-group">
     <label for="pickup">Pickup Location:</label>
@@ -88,7 +84,6 @@
     <label for="dropoff">Drop-off Location:</label>
     <input type="text" id="dropoff" placeholder="Enter drop-off location">
   </div>
-
   <!-- Driver Info -->
   <div id="driver-info">
     <h3>Driver Info</h3>
@@ -97,24 +92,21 @@
     <p id="driver-plate">Plate: —</p>
     <button class="chat-with-driver">Chat with Driver</button>
   </div>
-
   <!-- Split Pill / Cancel Buttons -->
   <div style="display:flex; gap:10px; margin-bottom:20px;">
     <button class="split-pill">View Bill</button>
     <button class="cancel-btn">Cancel</button>
   </div>
-
   <!-- Leaflet JS -->
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-
+  <script src="../Backend/orderCar-backend.js"></script>
   <script>
-    // Wait for DOM
+    let driverMarker;
+    let dropoffMarker=null;
     document.addEventListener("DOMContentLoaded", () => {
-      // Sidebar toggle
       const menuBtn = document.getElementById("menuBtn");
       const sidebar = document.getElementById("sidebar");
       menuBtn.addEventListener("click", () => sidebar.classList.toggle("active"));
-
       // Map initialization
       const campusCenter = [24.7136, 46.6753];
       const map = L.map("map").setView(campusCenter, 16);
@@ -122,23 +114,21 @@
         attribution: '&copy; OpenStreetMap contributors',
         maxZoom: 19
       }).addTo(map);
-
       // Pickup marker
       const pickupMarker = L.marker(campusCenter, {draggable:true}).addTo(map);
       pickupMarker.bindPopup("Drag to set pickup location").openPopup();
       pickupMarker.on('dragend', (e) => {
         const pos = e.target.getLatLng();
         document.getElementById('pickup').value = `Lat: ${pos.lat.toFixed(5)}, Lng: ${pos.lng.toFixed(5)}`;
+        setPickup(pos.lat,pos.lng);
       });
-
       // Example driver
       const assignedDriver = { name:"Ahmed Massaud", car:"Toyota Camry", plate:"R12345", location:[24.7145, 46.6765] };
       document.getElementById("driver-name").innerText = `Name: ${assignedDriver.name}`;
       document.getElementById("driver-car").innerText = `Car: ${assignedDriver.car}`;
       document.getElementById("driver-plate").innerText = `Plate: ${assignedDriver.plate}`;
-
       // Driver marker with emoji
-      L.marker(assignedDriver.location, {
+      driverMarker=L.marker(assignedDriver.location, {
         icon: L.divIcon({
           className: 'driver-emoji',
           html: '<div style="font-size:40px;">🚗</div>',
@@ -146,23 +136,32 @@
           iconAnchor: [20, 40],
           popupAnchor: [0, -40]
         })
-      }).addTo(map).bindPopup("Driver location");
-
-      // Button redirects
+      }).addTo(map);
+      // Choosing dropoff when clicking on the map      
+      map.on("click", (e) => {
+        const lat = e.latlng.lat;
+        const lng = e.latlng.lng;
+      document.getElementById("dropoff").value =`Lat: ${lat.toFixed(5)}, Lng: ${lng.toFixed(5)}`;
+      setDropoff(lat, lng);
+      if (dropoffMarker) map.removeLayer(dropoffMarker);
+        dropoffMarker = L.marker([lat, lng]).addTo(map);
+      });
       document.querySelector(".chat-with-driver").addEventListener("click", () => {
         window.location.href = "chat-with-driver.html";
       });
-
       document.querySelector(".split-pill").addEventListener("click", () => {
         window.location.href = "split-pill.html";
       });
-
       document.querySelector(".cancel-btn").addEventListener("click", () => {
         window.location.href = "Ride.html";
       });
+      // Move the car every 100ms according to the backend      
+      setInterval(() => {
+        const loc = getDriverLocation();
+        driverMarker.setLatLng([loc.lat, loc.lng]);
+      }, 100);
     });
   </script>
-
   <script src="../Backend/emergency.js"></script>
 </body>
 </html>

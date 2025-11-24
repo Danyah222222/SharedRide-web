@@ -83,83 +83,72 @@
 </head>
 
 <body>
-
   <h2>Schedule Your Ride</h2>
-
   <!-- Map -->
   <div id="map-container">
     <div id="map"></div>
   </div>
-
   <!-- Date + Time Picker -->
   <div class="schedule-box">
     <label for="rideDate">Choose Ride Date:</label>
     <input type="date" id="rideDate" />
-
     <label for="rideTime">Choose Ride Time:</label>
     <input type="time" id="rideTime" />
-
     <button onclick="confirmRide()">Schedule Ride</button>
   </div>
-
+<script src="../Backend/schedule-backend.js"></script>
   <!-- Leaflet JS -->
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-
-  <script>
-    // Map center (same as ride page)
-    const campusCenter = [24.7136, 46.6753];
-
-    // Initialize map
-    const map = L.map('map').setView(campusCenter, 16);
-
-    // OpenStreetMap tiles
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 19,
-      attribution: '&copy; OpenStreetMap contributors'
-    }).addTo(map);
-
-    // Pickup marker (draggable)
-    const pickupMarker = L.marker(campusCenter, { draggable: true })
-      .addTo(map)
-      .bindPopup("Pickup Location");
-
-    let destinationMarker = null;
-
-    // Destination marker added on map click
-    map.on('click', function(e) {
-      const clickedLocation = e.latlng;
-
-      if (!destinationMarker) {
-        destinationMarker = L.marker(clickedLocation, {
-          draggable: true,
-          icon: L.icon({
-            iconUrl: "https://cdn-icons-png.flaticon.com/512/684/684908.png",
-            iconSize: [32, 32]
-          })
-        }).addTo(map).bindPopup("Destination");
-      } else {
-        destinationMarker.setLatLng(clickedLocation);
-      }
-    });
-
-    // Schedule ride button
-    function confirmRide() {
-      const date = document.getElementById('rideDate').value;
-      const time = document.getElementById('rideTime').value;
-
-      if (!date || !time) {
-        alert("Please select a date and time for your ride.");
-        return;
-      }
-
-      if (!destinationMarker) {
-        alert("Please click on the map to choose a destination.");
-        return;
-      }
-
-      alert("Ride Scheduled Successfully!\nDate: " + date + "\nTime: " + time);
+<script>
+  // Map center (same as ride page)
+  const campusCenter = [24.7136, 46.6753];
+  // Initialize map
+  const map = L.map('map').setView(campusCenter, 16);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '&copy; OpenStreetMap contributors'
+  }).addTo(map);
+  const pickupMarker = L.marker(campusCenter, { draggable: true })
+    .addTo(map)
+    .bindPopup("Pickup Location");
+  setSchedulePickup(campusCenter[0], campusCenter[1]);
+  pickupMarker.on("dragend", (e) => {
+    const pos = e.target.getLatLng();
+    setSchedulePickup(pos.lat, pos.lng);
+  });
+  let destinationMarker = null;
+  // Destination marker added on map click
+  map.on('click', function(e) {
+    const clickedLocation = e.latlng;
+    if (!destinationMarker) {
+      destinationMarker = L.marker(clickedLocation, {
+        draggable: true,
+        icon: L.icon({
+          iconUrl: "https://cdn-icons-png.flaticon.com/512/684/684908.png",
+          iconSize: [32, 32]
+        })
+      }).addTo(map).bindPopup("Destination");
+    } else {
+      destinationMarker.setLatLng(clickedLocation);
     }
-  </script>
-
+    setScheduleDestination(clickedLocation.lat, clickedLocation.lng);
+    destinationMarker.on("dragend", (ev) => {
+      const pos = ev.target.getLatLng();
+      setScheduleDestination(pos.lat, pos.lng);
+    });
+  });
+  // Schedule ride button
+  function confirmRide() {
+    const date = document.getElementById('rideDate').value;
+    const time = document.getElementById('rideTime').value;
+    const result = saveScheduledRide(date, time);
+    if (!result.ok) {
+      alert(result.message);
+      return;
+    }
+    alert(result.message);
+    window.location.href = "Ride.html";
+  }
+</script>
 </body>
 </html>

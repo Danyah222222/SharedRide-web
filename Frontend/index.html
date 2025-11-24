@@ -151,19 +151,16 @@
       background-color: #f0f0f0;
     }
   </style>
-
   <!-- Leaflet CSS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
   <!-- Leaflet JS -->
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-
 </head>
 <body>
   <!-- Topbar -->
   <div class="topbar">
     <div class="hamburger" id="menuBtn">&#9776;</div>
   </div>
-
   <!-- Sidebar -->
   <div class="sidebar" id="sidebar">
     <ul>
@@ -177,55 +174,53 @@
     </ul>
     <button class="sos-btn">SOS</button>
   </div>
-
   <!-- Main Content -->
   <div class="main">
     <!-- Search bar -->
     <input type="text" id="search-bar" placeholder="Enter location..." />
-
     <!-- 🔹 Interactive Map (Leaflet) -->
     <div id="map-container">
       <div id="map" style="height: 100%; width: 100%;"></div>
     </div>
-
     <!-- Start button -->
 <a href="Ride.html">
-
-
       <button id="start-button">Start</button>
     </a>
   </div>
-
+<script src="../Backend/map-backend.js"></script>
   <script>
     const menuBtn = document.getElementById("menuBtn");
     const sidebar = document.getElementById("sidebar");
-
     menuBtn.addEventListener("click", () => {
       sidebar.classList.toggle("active");
     });
-
-    // 🗺️ Initialize Leaflet map
-    var map = L.map('map').setView([24.7136, 46.6753], 13); // Riyadh default
-
-    // Add OpenStreetMap tiles
+    //Initialize Leaflet map
+    var map = L.map('map').setView([24.7136, 46.6753], 13); 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19,
       attribution: '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a>'
     }).addTo(map);
-
-    // Add a default marker
-    var marker = L.marker([24.7136, 46.6753]).addTo(map)
-      .bindPopup('<b>Hello!</b><br>This is Riyadh.')
+    let pickupMarker = null;
+    const searchInput = document.getElementById("search-bar");
+    //serch
+    searchInput.addEventListener("keydown", async function(e) {
+      if (e.key === "Enter") {
+        const query = searchInput.value.trim();
+      if (!query) return;
+        const result = await searchLocation(query);
+      if (!result) {
+        alert("Location not found!");
+        return;
+    }
+    map.setView([result.lat, result.lon], 15);
+    if (pickupMarker) {
+      map.removeLayer(pickupMarker);
+    }
+    pickupMarker = L.marker([result.lat, result.lon]).addTo(map)
+      .bindPopup(result.displayName)
       .openPopup();
-
-    // Allow clicking on map to add marker
-    map.on('click', function(e) {
-      var lat = e.latlng.lat.toFixed(5);
-      var lng = e.latlng.lng.toFixed(5);
-      L.marker([lat, lng]).addTo(map)
-        .bindPopup("Clicked at: " + lat + ", " + lng)
-        .openPopup();
-    });
+  }
+});
   </script>
 </body>
 </html>
