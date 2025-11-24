@@ -4,39 +4,230 @@
   <meta charset="UTF-8">
   <title>Split the Bill</title>
   <style>
-    body { font-family: Arial; background: #e6f0ff; display: flex; justify-content: center; padding-top: 50px; }
-    .container { background: #fff; padding: 20px; border-radius: 12px; width: 400px; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.1);}
-    h1 { color: #0047b3; margin-bottom: 20px; }
-    .option-btn { background: #0047b3; color: #fff; border: none; padding: 12px 20px; border-radius: 8px; cursor: pointer; margin: 10px 0; width: 80%; }
-    .option-btn:hover { background: #003380; }
-    .form-section { margin-top: 20px; display: none; text-align: left; }
-    label { display: block; margin-bottom: 5px; font-weight: bold; }
-    input[type="number"] { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #b3d1ff; margin-bottom: 15px; }
-    button.submit { background: #0047b3; color: #fff; border: none; padding: 10px 15px; border-radius: 8px; cursor: pointer; width: 100%; }
-    button.submit:hover { background: #003380; }
+    body { 
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      display: flex; 
+      justify-content: center; 
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+      margin: 0;
+    }
+    .container { 
+      background: #fff; 
+      padding: 30px; 
+      border-radius: 20px; 
+      width: 100%;
+      max-width: 450px;
+      text-align: center; 
+      box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+    }
+    h1 { 
+      color: #667eea; 
+      margin-bottom: 30px;
+      font-size: 28px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .option-btn { 
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #fff; 
+      border: none; 
+      padding: 15px 25px; 
+      border-radius: 12px; 
+      cursor: pointer; 
+      margin: 8px 0; 
+      width: 85%;
+      font-size: 16px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    }
+    .option-btn:hover { 
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+    }
+    .form-section { 
+      margin-top: 25px; 
+      display: none; 
+      text-align: left;
+      animation: fadeIn 0.3s ease;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    label { 
+      display: block; 
+      margin-bottom: 8px; 
+      font-weight: 600;
+      color: #333;
+      font-size: 14px;
+    }
+    input[type="number"] { 
+      width: 100%; 
+      padding: 12px; 
+      border-radius: 10px; 
+      border: 2px solid #e0e7ff; 
+      margin-bottom: 18px;
+      font-size: 15px;
+      transition: border 0.3s ease;
+      box-sizing: border-box;
+    }
+    input[type="number"]:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+    button.submit { 
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #fff; 
+      border: none; 
+      padding: 14px 20px; 
+      border-radius: 10px; 
+      cursor: pointer; 
+      width: 100%;
+      font-size: 16px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    }
+    button.submit:hover { 
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+    }
+    .msg-close {
+      float: right;
+      background: #f3f4f6;
+      border: none;
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 16px;
+      color: #6b7280;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+    }
+    .msg-close:hover {
+      background: #e5e7eb;
+      color: #374151;
+    }
+    .bill-card {
+      background: linear-gradient(135deg, #f0f4ff 0%, #e8edff 100%);
+      border: none;
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 15px;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.15);
+      text-align: left;
+      transition: transform 0.2s ease;
+    }
+    .bill-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.25);
+    }
+    .bill-card .bill-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      font-size: 15px;
+    }
+    .bill-card .bill-row:last-of-type {
+      margin-bottom: 15px;
+    }
+    .bill-card .bill-label {
+      color: #667eea;
+      font-weight: 700;
+    }
+    .bill-card .bill-value {
+      color: #374151;
+      font-weight: 600;
+    }
+    .bill-card .copy-btn {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 14px;
+      width: 100%;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      box-shadow: 0 3px 10px rgba(102, 126, 234, 0.3);
+    }
+    .bill-card .copy-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.5);
+    }
+    .bill-type-badge {
+      display: inline-block;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    #result, #persistent {
+      margin-top: 18px;
+      padding: 12px;
+      border-radius: 10px;
+      background: #f0f9ff;
+      color: #1e3a8a;
+      font-weight: 600;
+    }
+    #toast {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      background: #1f2937;
+      color: #fff;
+      padding: 12px 20px;
+      border-radius: 12px;
+      display: none;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+      font-weight: 600;
+      animation: slideIn 0.3s ease;
+    }
+    @keyframes slideIn {
+      from { transform: translateX(100px); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
   </style>
 </head>
 <body>
   <div class="container">
     <h1>Pay Your Ride</h1>
-    <button class="option-btn" onclick="showSection('split')">Split the Bill</button>
-    <button class="option-btn" onclick="showSection('full')">Pay in Full</button>
+    <button type="button" class="option-btn" onclick="showSection('split')">Split the Bill</button>
+    <button type="button" class="option-btn" onclick="showSection('full')">Pay in Full</button>
 
     <!-- Split Bill -->
     <div class="form-section" id="split">
       <label>Total Amount ($):</label>
-      <input type="number" id="totalAmountSplit">
+      <input type="number" id="totalAmountSplit" min="0" step="0.01">
       <label>Number of People:</label>
-      <input type="number" id="peopleCount">
-      <button class="submit" onclick="sendSplitBill()">Submit</button>
+      <input type="number" id="peopleCount" min="1" step="1">
+      <button type="button" class="submit" id="splitSubmit" onclick="sendSplitBill()">Submit</button>
     </div>
 
     <!-- Pay Full -->
     <div class="form-section" id="full">
       <label>Total Amount ($):</label>
-      <input type="number" id="totalAmountFull">
-      <button class="submit" onclick="sendFullPay()">Submit</button>
+      <input type="number" id="totalAmountFull" min="0" step="0.01">
+      <button type="button" class="submit" id="fullSubmit" onclick="sendFullPay()">Submit</button>
     </div>
+    <div id="result" style="margin-top:16px;color:#003380;font-weight:bold;"></div>
+    <div id="persistent" style="margin-top:8px;color:#003380;font-weight:bold;"></div>
+    <div id="toast" style="position:fixed;bottom:30px;right:30px;background:#1f2937;color:#fff;padding:12px 20px;border-radius:12px;display:none;box-shadow:0 6px 20px rgba(0,0,0,0.3);font-weight:600;"></div>
   </div>
 
   <script>
@@ -47,28 +238,84 @@
     }
 
     function sendSplitBill() {
-      const total = document.getElementById("totalAmountSplit").value;
-      const people = document.getElementById("peopleCount").value;
+      const total = Number(document.getElementById("totalAmountSplit").value);
+      const people = Number(document.getElementById("peopleCount").value);
+      const resultEl = document.getElementById('result');
 
-      fetch('/api/split-bill', {  // backend endpoint
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ total, people })
-      }).then(res => res.json())
-        .then(data => alert(`Backend response: ${data.message}`))
-        .catch(err => alert("Error sending data!"));
+      resultEl.textContent = '';
+
+      if (!total || total <= 0) { 
+        resultEl.textContent = 'Please enter a valid total amount.'; 
+        return; 
+      }
+      if (!people || people < 1) { 
+        resultEl.textContent = 'Please enter a valid number of people.'; 
+        return; 
+      }
+
+      const perPerson = (total / people).toFixed(2);
+      const billId = Date.now();
+      
+      const splitHtml = `Per person: <strong>$${perPerson}</strong> — ${people} people (ID: ${billId})` +
+        ` <button type="button" style="margin-left:8px;padding:6px 12px;border-radius:8px;border:none;background:#667eea;color:white;cursor:pointer;" onclick="copyText('Per person: $${perPerson} — ID:${billId}')">Copy</button>` +
+        `<div style="margin-top:6px;color:#10b981;font-weight:600;">Payment calculated ✅</div>`;
+      showMessage(splitHtml);
+
+      document.getElementById("totalAmountSplit").value = '';
+      document.getElementById("peopleCount").value = '';
     }
 
     function sendFullPay() {
-      const total = document.getElementById("totalAmountFull").value;
+      const total = Number(document.getElementById("totalAmountFull").value);
+      const resultEl = document.getElementById('result');
+      resultEl.textContent = '';
 
-      fetch('/api/pay-full', {  // backend endpoint
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ total })
-      }).then(res => res.json())
-        .then(data => alert(`Backend response: ${data.message}`))
-        .catch(err => alert("Error sending data!"));
+      if (!total || total <= 0) { 
+        resultEl.textContent = 'Please enter a valid total amount.'; 
+        return; 
+      }
+
+      const paymentId = Date.now();
+      
+      const payHtml = `Payment recorded — <strong>ID: ${paymentId}</strong> — Amount: <strong>$${total}</strong>` +
+        ` <button type="button" style="margin-left:8px;padding:6px 12px;border-radius:8px;border:none;background:#667eea;color:white;cursor:pointer;" onclick="copyText('Payment ID: ${paymentId} — Amount: $${total}')">Copy</button>` +
+        `<div style="margin-top:6px;color:#10b981;font-weight:600;">Payment recorded ✅</div>`;
+      showMessage(payHtml);
+
+      document.getElementById("totalAmountFull").value = '';
+    }
+
+    function copyText(text) {
+      if (!navigator.clipboard) {
+        alert('Clipboard not supported');
+        return;
+      }
+      navigator.clipboard.writeText(text).then(() => {
+        showToast('Copied to clipboard');
+      }).catch(() => alert('Copy failed'));
+    }
+
+    function showMessage(html) {
+      const p = document.getElementById('persistent');
+      const closeBtn = `<button class="msg-close" onclick="closeMessage()" aria-label="Close message">✕</button>`;
+      p.innerHTML = closeBtn + html;
+    }
+
+    function closeMessage() {
+      document.getElementById('persistent').textContent = '';
+    }
+
+    function showToast(text) {
+      const t = document.getElementById('toast');
+      t.textContent = text;
+      t.style.display = 'block';
+      t.style.opacity = '1';
+      if (t._timeout) clearTimeout(t._timeout);
+      t._timeout = setTimeout(() => {
+        t.style.transition = 'opacity 300ms';
+        t.style.opacity = '0';
+        setTimeout(() => { t.style.display = 'none'; t.style.transition = ''; }, 300);
+      }, 2000);
     }
   </script>
 </body>

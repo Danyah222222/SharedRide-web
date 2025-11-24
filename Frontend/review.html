@@ -17,7 +17,6 @@
       min-height: 100vh;
     }
 
-    /* Top bar */
     .topbar {
       width: 100%;
       height: 60px;
@@ -42,22 +41,31 @@
     h1 {
       margin-top: 90px;
       color: #0277bd;
-      font-size: 28px;
+      font-size: 32px;
+      font-weight: 700;
     }
 
     .review-card {
       background-color: #ffffff;
       width: 90%;
-      max-width: 400px;
-      margin-top: 20px;
-      padding: 20px;
-      border-radius: 15px;
+      max-width: 700px;
+      margin: 20px auto;
+      padding: 20px 24px;
+      border-radius: 20px;
       box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+      box-sizing: border-box;
+    }
+
+    #reviews-container {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
 
     .review-name {
-      font-size: 18px;
-      font-weight: 600;
+      font-size: 20px;
+      font-weight: 700;
       color: #01579b;
     }
 
@@ -76,18 +84,18 @@
 
     textarea {
       width: 90%;
-      max-width: 400px;
-      height: 100px;
-      border-radius: 12px;
+      max-width: 700px;
+      border-radius: 15px;
       border: 1px solid #b3e5fc;
       padding: 12px;
       font-family: 'Roboto', sans-serif;
-      margin-top: 25px;
-      resize: none;
+      margin-top: 15px;
       background: #e1f5fe;
       color: #01579b;
       outline: none;
       transition: border-color 0.3s;
+      height: 120px;
+      resize: none;
     }
 
     textarea:focus {
@@ -99,7 +107,7 @@
       color: white;
       border: none;
       padding: 12px 25px;
-      border-radius: 12px;
+      border-radius: 15px;
       margin: 20px 0 40px 0;
       font-size: 16px;
       font-weight: bold;
@@ -110,17 +118,63 @@
     .add-review:hover {
       background-color: #01579b;
     }
+
+    .clear-reviews {
+      background-color: #b00020;
+      color: white;
+      border: none;
+      padding: 12px 25px;
+      border-radius: 15px;
+      margin: 10px 0 20px 0;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .clear-reviews:hover {
+      background-color: #8b0000;
+    }
+
+    /* شريط التقييم (Slider) */
+    .rating-input {
+      width: 90%;
+      max-width: 700px;
+      margin-top: 25px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .rating-label {
+      font-size: 15px;
+      color: #01579b;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .rating-value {
+      color: #ffaa00;
+      font-weight: 700;
+    }
+
+    #rating-range {
+      width: 100%;
+    }
   </style>
 </head>
 <body>
-  <!-- Top bar -->
+
+  <!-- Top Bar -->
   <div class="topbar">
     <a href="index.html" class="back">&#9776;</a>
   </div>
 
-  <!-- Content -->
+  <!-- Title -->
   <h1>Reviews & Ratings</h1>
 
+  <!-- Static reviews that were there before -->
   <div class="review-card">
     <div class="review-name">Ali Mohammed</div>
     <div class="review-rating">⭐ 4.8 / 5</div>
@@ -133,7 +187,116 @@
     <div class="review-text">Friendly driver, smooth ride. Highly recommend.</div>
   </div>
 
-  <textarea placeholder="Write your review here..."></textarea>
-  <button class="add-review">Submit Review</button>
+  <!-- مكان عرض التقييمات من الـ API -->
+  <div id="reviews-container"></div>
+
+  <!-- شريط تقييم من 1 إلى 5 بخطوة 0.1 -->
+  <div class="rating-input">
+    <div class="rating-label">
+      <span>Select rating (1 – 5)</span>
+      <span class="rating-value">
+        ⭐ <span id="rating-display">3.0</span> / 5
+      </span>
+    </div>
+    <input type="range" id="rating-range" min="1" max="5" step="0.1" value="3">
+  </div>
+
+  <!-- كتابة التقييم -->
+  <textarea id="review-input" placeholder="Write your review here..."></textarea>
+  <button class="add-review" id="submit-btn">Submit Review</button>
+  <button class="clear-reviews" id="clear-btn">Clear All Reviews</button>
+
+  <script>
+    const API_URL = "http://localhost:3000/api/reviews";
+
+    //⭐ تحميل التقييمات من الـ API
+    async function loadReviews() {
+      try {
+        const res = await fetch(API_URL);
+        const reviews = await res.json();
+
+        const container = document.getElementById("reviews-container");
+        container.innerHTML = "";
+
+        reviews.forEach(r => {
+          const card = document.createElement("div");
+          card.className = "review-card";
+          card.innerHTML = `
+            <div class="review-name">${r.name}</div>
+            <div class="review-rating">⭐ ${r.rating} / 5</div>
+            <div class="review-text">${r.text}</div>
+          `;
+          container.appendChild(card);
+        });
+      } catch (err) {
+        console.error('Error loading reviews:', err);
+      }
+    }
+
+    //⭐ تعامل شريط التقييم (يحدث الرقم تلقائيًا)
+    const ratingRange = document.getElementById("rating-range");
+    const ratingDisplay = document.getElementById("rating-display");
+
+    ratingRange.addEventListener("input", () => {
+      ratingDisplay.textContent = Number(ratingRange.value).toFixed(1);
+    });
+
+    //⭐ إرسال تقييم جديد
+    async function addReview() {
+      const text = document.getElementById("review-input").value.trim();
+      const rating = ratingRange.value;
+
+      if (!text) {
+        alert("Please write your review!");
+        return;
+      }
+
+      try {
+        await fetch(API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            text,
+            rating,
+            name: "John Doe"
+          })
+        });
+
+        document.getElementById("review-input").value = "";
+        ratingRange.value = 3;
+        ratingDisplay.textContent = "3.0";
+
+        loadReviews();
+      } catch (err) {
+        console.error('Error submitting review:', err);
+        alert('Error connecting to server');
+      }
+    }
+
+    //⭐ حذف جميع التقييمات
+    async function clearAllReviews() {
+      if (!confirm('Delete ALL reviews from database? This cannot be undone.')) return;
+
+      try {
+        const res = await fetch(API_URL, { method: 'DELETE' });
+        const data = await res.json().catch(() => null);
+
+        if (res.ok) {
+          alert(data && data.message ? data.message : 'All reviews deleted.');
+          loadReviews();
+        } else {
+          alert('Failed to clear reviews. ' + (data && data.message ? data.message : ''));
+        }
+      } catch (err) {
+        console.error('Error clearing reviews:', err);
+        alert('Server error. Could not clear reviews.');
+      }
+    }
+
+    document.getElementById("submit-btn").addEventListener("click", addReview);
+    document.getElementById("clear-btn").addEventListener("click", clearAllReviews);
+    loadReviews(); // Load reviews from API on page load
+  </script>
+
 </body>
 </html>
