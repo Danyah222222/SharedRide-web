@@ -1,5 +1,4 @@
-<<<<<<< HEAD
-=======
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -37,7 +36,11 @@
     }
 
     /* Sidebar */
-    .sidebar { position:fixed; top:0; left:-260px; width:260px; height:100%; background:white; box-shadow:2px 0 10px rgba(0,0,0,0.1); padding:70px 20px 20px; transition:left 0.4s ease; z-index:3; }
+    .sidebar { 
+      position:fixed; top:0; left:-260px; width:260px; height:100%; 
+      background:white; box-shadow:2px 0 10px rgba(0,0,0,0.1); 
+      padding:70px 20px 20px; transition:left 0.4s ease; z-index:3; 
+    }
     .sidebar.active { left:0; }
     .sidebar ul { list-style:none; }
     .sidebar ul li { margin:20px 0; font-size:18px; display:flex; align-items:center; cursor:pointer; transition:color 0.3s; }
@@ -69,6 +72,7 @@
   <div class="topbar">
     <div class="hamburger" id="menuBtn">&#9776;</div>
   </div>
+
   <!-- Sidebar -->
   <div class="sidebar" id="sidebar">
     <ul>
@@ -82,115 +86,135 @@
     </ul>
     <button class="sos-btn" onclick="sendEmergencyAlert()">SOS</button>
   </div>
+
   <!-- Search bar -->
   <div id="search-container">
     <input type="text" id="searchInput" placeholder="Enter location">
   </div>
+
   <!-- Map -->
   <div id="map-container">
     <div id="map"></div>
   </div>
+
   <!-- Buttons -->
   <div id="button-container">
     <button id="orderCarBtn" class="button">Order a Car Now</button>
-   <button class="button" onclick="checkSchedule()">Schedule a Ride</button>
+    <button class="button" onclick="checkSchedule()">Schedule a Ride</button>
   </div>
-<script src="../Backend/ride-backend.js"></script>
-<script src="../Backend/schedule-backend.js"></script>
-  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-<script>
-  const map = L.map("map").setView([24.7136, 46.6753], 16);
-  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-    maxZoom: 19
-  }).addTo(map);
-  document.getElementById("orderCarBtn").addEventListener("click", () => {
-    window.location.href = "orderCar.html";
-  });
-  const searchInput = document.getElementById("searchInput");
-  let pickupMarker = null;
-  let cars = [];
-  let carMarkers = [];
-  let currentCenter = { lat: 24.7136, lon: 46.6753 };
-  const carIcon = L.divIcon({
-    className: "car-emoji-icon",
-    html: "🚗",
-    iconSize: [30, 30],
-    iconAnchor: [15, 30]
-  });
-  // Creating cars around the center when the page first loads
-  async function initCarsAroundCenter(centerLat, centerLon) {
-    carMarkers.forEach(({ marker }) => map.removeLayer(marker));
-    carMarkers = [];
-    cars = [];
-    const carCount = 3;
-    for (let i = 0; i < carCount; i++) {
-      const route = await buildRandomRouteNear(centerLat, centerLon);
-      if (!route || route.length === 0) continue;
-      const car = {
-        id: i + 1,
-        route,
-        routeIndex: 0,
-        lat: route[0].lat,
-        lon: route[0].lon
-      };
-       cars.push(car);
-       const marker = L.marker([car.lat, car.lon], { icon: carIcon }).addTo(map);
-       carMarkers.push({ car, marker });
-    }
-  }
-  // moving cars continuously along the route
-  async function moveCarsOnRoutes() {
-    if (cars.length === 0) return;
-    for (let i = 0; i < cars.length; i++) {
-      const car = cars[i];
-      const markerData = carMarkers[i];
-      if (!markerData) continue;
-      car.routeIndex++;
-      if (car.routeIndex >= car.route.length - 2) {
-        const newRoute = await buildRandomRouteNear(currentCenter.lat, currentCenter.lon);
-        if (newRoute.length > 0) {
-          car.route = newRoute;
-          car.routeIndex = 0;
-        }
-      }
-      const point = car.route[car.routeIndex];
-      if (!point) continue;
-      car.lat = point.lat;
-      car.lon = point.lon;
-      markerData.marker.setLatLng([car.lat, car.lon]);
-    }
-  }
-  setInterval(moveCarsOnRoutes, 1600);
-  initCarsAroundCenter(currentCenter.lat, currentCenter.lon);
-  searchInput.addEventListener("keydown", async (e) => {
-    if (e.key !== "Enter") return;
-    const text = searchInput.value.trim();
-    if (!text) return;
-    const result = await searchLocation(text);
-    if (!result) {
-      alert("Location not found!");
-      return;
-    }
-    currentCenter = { lat: result.lat, lon: result.lon };
-    map.setView([result.lat, result.lon], 16);
-    if (pickupMarker) map.removeLayer(pickupMarker);
-    pickupMarker = L.marker([result.lat, result.lon])
-      .addTo(map)
-      .bindPopup(result.displayName)
-      .openPopup();
-    await initCarsAroundCenter(currentCenter.lat, currentCenter.lon);
-  });
-  function checkSchedule() {
-    const ride = getScheduledRide(); 
-    if (ride) {
-      alert(`⚠️ You already have a scheduled ride on ${ride.date} at ${ride.time}`);
-    }
-    window.location.href = "futureRide.html";
-  }
-</script>
-  <!-- Backend SOS -->
-  <script src="../Backend/emergency.js"></script>
 
+  <!-- Backend scripts -->
+  <script src="../Backend/ride-backend.js"></script>
+  <script src="../Backend/schedule-backend.js"></script>
+  <script src="../Backend/emergency.js"></script>
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+  <!-- Page JS -->
+  <script>
+    // Sidebar toggle
+    const menuBtn = document.getElementById("menuBtn");
+    const sidebar = document.getElementById("sidebar");
+    menuBtn.addEventListener("click", () => {
+      sidebar.classList.toggle("active");
+    });
+
+    // Map setup
+    const map = L.map("map").setView([24.7136, 46.6753], 16);
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      maxZoom: 19
+    }).addTo(map);
+
+    document.getElementById("orderCarBtn").addEventListener("click", () => {
+      window.location.href = "orderCar.html";
+    });
+
+    const searchInput = document.getElementById("searchInput");
+    let pickupMarker = null;
+    let cars = [];
+    let carMarkers = [];
+    let currentCenter = { lat: 24.7136, lon: 46.6753 };
+    const carIcon = L.divIcon({
+      className: "car-emoji-icon",
+      html: "🚗",
+      iconSize: [30, 30],
+      iconAnchor: [15, 30]
+    });
+
+    // Creating cars around the center when the page first loads
+    async function initCarsAroundCenter(centerLat, centerLon) {
+      carMarkers.forEach(({ marker }) => map.removeLayer(marker));
+      carMarkers = [];
+      cars = [];
+      const carCount = 3;
+      for (let i = 0; i < carCount; i++) {
+        const route = await buildRandomRouteNear(centerLat, centerLon);
+        if (!route || route.length === 0) continue;
+        const car = {
+          id: i + 1,
+          route,
+          routeIndex: 0,
+          lat: route[0].lat,
+          lon: route[0].lon
+        };
+        cars.push(car);
+        const marker = L.marker([car.lat, car.lon], { icon: carIcon }).addTo(map);
+        carMarkers.push({ car, marker });
+      }
+    }
+
+    // Move cars along routes
+    async function moveCarsOnRoutes() {
+      if (cars.length === 0) return;
+      for (let i = 0; i < cars.length; i++) {
+        const car = cars[i];
+        const markerData = carMarkers[i];
+        if (!markerData) continue;
+        car.routeIndex++;
+        if (car.routeIndex >= car.route.length - 2) {
+          const newRoute = await buildRandomRouteNear(currentCenter.lat, currentCenter.lon);
+          if (newRoute.length > 0) {
+            car.route = newRoute;
+            car.routeIndex = 0;
+          }
+        }
+        const point = car.route[car.routeIndex];
+        if (!point) continue;
+        car.lat = point.lat;
+        car.lon = point.lon;
+        markerData.marker.setLatLng([car.lat, car.lon]);
+      }
+    }
+
+    setInterval(moveCarsOnRoutes, 1600);
+    initCarsAroundCenter(currentCenter.lat, currentCenter.lon);
+
+    // Search functionality
+    searchInput.addEventListener("keydown", async (e) => {
+      if (e.key !== "Enter") return;
+      const text = searchInput.value.trim();
+      if (!text) return;
+      const result = await searchLocation(text);
+      if (!result) {
+        alert("Location not found!");
+        return;
+      }
+      currentCenter = { lat: result.lat, lon: result.lon };
+      map.setView([result.lat, result.lon], 16);
+      if (pickupMarker) map.removeLayer(pickupMarker);
+      pickupMarker = L.marker([result.lat, result.lon])
+        .addTo(map)
+        .bindPopup(result.displayName)
+        .openPopup();
+      await initCarsAroundCenter(currentCenter.lat, currentCenter.lon);
+    });
+
+    function checkSchedule() {
+      const ride = getScheduledRide(); 
+      if (ride) {
+        alert(`⚠️ You already have a scheduled ride on ${ride.date} at ${ride.time}`);
+      }
+      window.location.href = "futureRide.html";
+    }
+  </script>
 </body>
 </html>
->>>>>>> origin/sarah-frontend

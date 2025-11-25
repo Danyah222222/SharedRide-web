@@ -161,6 +161,7 @@
   <div class="topbar">
     <div class="hamburger" id="menuBtn">&#9776;</div>
   </div>
+
   <!-- Sidebar -->
   <div class="sidebar" id="sidebar">
     <ul>
@@ -172,55 +173,62 @@
       <li><a href="qna.html">❓ Q&A</a></li>
       <li><a href="review.html">📝 Reviews</a></li>
     </ul>
-    <button class="sos-btn">SOS</button>
+    <button class="sos-btn" onclick="window.location.href='emergency.html'">SOS</button>
   </div>
+
   <!-- Main Content -->
   <div class="main">
     <!-- Search bar -->
     <input type="text" id="search-bar" placeholder="Enter location..." />
-    <!-- 🔹 Interactive Map (Leaflet) -->
+    <!-- Interactive Map (Leaflet) -->
     <div id="map-container">
       <div id="map" style="height: 100%; width: 100%;"></div>
     </div>
     <!-- Start button -->
-<a href="Ride.html">
+    <a href="Ride.html">
       <button id="start-button">Start</button>
     </a>
   </div>
-<script src="../Backend/map-backend.js"></script>
+
+  <script src="../Backend/map-backend.js"></script>
   <script>
+    // Sidebar toggle
     const menuBtn = document.getElementById("menuBtn");
     const sidebar = document.getElementById("sidebar");
     menuBtn.addEventListener("click", () => {
       sidebar.classList.toggle("active");
     });
-    //Initialize Leaflet map
-    var map = L.map('map').setView([24.7136, 46.6753], 13); 
+
+    // Initialize Leaflet map
+    const map = L.map('map').setView([24.7136, 46.6753], 13);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19,
       attribution: '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a>'
     }).addTo(map);
+
     let pickupMarker = null;
     const searchInput = document.getElementById("search-bar");
-    //serch
+
+    // Search functionality
     searchInput.addEventListener("keydown", async function(e) {
       if (e.key === "Enter") {
         const query = searchInput.value.trim();
-      if (!query) return;
+        if (!query) return;
         const result = await searchLocation(query);
-      if (!result) {
-        alert("Location not found!");
-        return;
-    }
-    map.setView([result.lat, result.lon], 15);
-    if (pickupMarker) {
-      map.removeLayer(pickupMarker);
-    }
-    pickupMarker = L.marker([result.lat, result.lon]).addTo(map)
-      .bindPopup(result.displayName)
-      .openPopup();
-  }
-});
+        if (!result) {
+          alert("Location not found!");
+          return;
+        }
+        map.setView([result.lat, result.lon], 15);
+        if (pickupMarker) {
+          map.removeLayer(pickupMarker);
+        }
+        pickupMarker = L.marker([result.lat, result.lon])
+          .addTo(map)
+          .bindPopup(result.displayName)
+          .openPopup();
+      }
+    });
   </script>
 </body>
 </html>
