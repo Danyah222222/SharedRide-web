@@ -209,6 +209,8 @@
     <h1>Pay Your Ride</h1>
     <button type="button" class="option-btn" onclick="showSection('split')">Split the Bill</button>
     <button type="button" class="option-btn" onclick="showSection('full')">Pay in Full</button>
+    <button type="button" class="option-btn" onclick="viewPastBills()" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);">View Past Bills</button>
+    <button type="button" class="option-btn" onclick="clearBills()" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);">Clear Bills</button>
 
     <!-- Split Bill -->
     <div class="form-section" id="split">
@@ -227,17 +229,49 @@
     </div>
     <div id="result" style="margin-top:16px;color:#003380;font-weight:bold;"></div>
     <div id="persistent" style="margin-top:8px;color:#003380;font-weight:bold;"></div>
+    <div id="billsList" style="margin-top:20px;"></div>
     <div id="toast" style="position:fixed;bottom:30px;right:30px;background:#1f2937;color:#fff;padding:12px 20px;border-radius:12px;display:none;box-shadow:0 6px 20px rgba(0,0,0,0.3);font-weight:600;"></div>
   </div>
 
   <script>
+    // Load last bill on page load
+    window.addEventListener('DOMContentLoaded', () => {
+      displayLastBill();
+    });
+
+    function displayLastBill() {
+      const lastBillData = localStorage.getItem('lastBill');
+      if (!lastBillData) return;
+      
+      const bill = JSON.parse(lastBillData);
+      const persistentEl = document.getElementById('persistent');
+      
+      if (bill.type === 'split') {
+        const html = `<div style="background:#f0fdf4;border:2px solid #10b981;padding:15px;border-radius:12px;margin-top:15px;">
+          <div style="color:#059669;font-weight:700;font-size:16px;margin-bottom:10px;">✅ Last Split Bill</div>
+          <div style="color:#374151;margin-bottom:8px;"><strong>Per person:</strong> $${bill.perPerson}</div>
+          <div style="color:#374151;margin-bottom:8px;"><strong>People:</strong> ${bill.people}</div>
+          <div style="color:#374151;margin-bottom:12px;"><strong>Total:</strong> $${bill.total}</div>
+          <button type="button" style="padding:8px 16px;border-radius:8px;border:none;background:#10b981;color:white;cursor:pointer;font-weight:600;" onclick="copyText('Split Bill ID: ${bill.billId} - Per person: $${bill.perPerson}')">Copy Details</button>
+        </div>`;
+        persistentEl.innerHTML = html;
+      } else if (bill.type === 'full') {
+        const html = `<div style="background:#fef3c7;border:2px solid #f59e0b;padding:15px;border-radius:12px;margin-top:15px;">
+          <div style="color:#d97706;font-weight:700;font-size:16px;margin-bottom:10px;">✅ Last Full Payment</div>
+          <div style="color:#374151;margin-bottom:12px;"><strong>Total Amount:</strong> $${bill.total}</div>
+          <button type="button" style="padding:8px 16px;border-radius:8px;border:none;background:#f59e0b;color:white;cursor:pointer;font-weight:600;" onclick="copyText('Payment ID: ${bill.paymentId} - Amount: $${bill.total}')">Copy Details</button>
+        </div>`;
+        persistentEl.innerHTML = html;
+      }
+    }
+
     function showSection(section) {
       document.getElementById('split').style.display = 'none';
       document.getElementById('full').style.display = 'none';
       document.getElementById(section).style.display = 'block';
     }
 
-    function sendSplitBill() {
+    async function sendSplitBill() {
       const total = Number(document.getElementById("totalAmountSplit").value);
       const people = Number(document.getElementById("peopleCount").value);
       const resultEl = document.getElementById('result');
@@ -254,18 +288,42 @@
       }
 
       const perPerson = (total / people).toFixed(2);
-      const billId = Date.now();
       
-      const splitHtml = `Per person: <strong>$${perPerson}</strong> — ${people} people (ID: ${billId})` +
-        ` <button type="button" style="margin-left:8px;padding:6px 12px;border-radius:8px;border:none;background:#667eea;color:white;cursor:pointer;" onclick="copyText('Per person: $${perPerson} — ID:${billId}')">Copy</button>` +
-        `<div style="margin-top:6px;color:#10b981;font-weight:600;">Payment calculated ✅</div>`;
-      showMessage(splitHtml);
+      try {
+        const response = await fetch('http://localhost:3000/api/split-bills', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ totalAmount: total, peopleCount: people, perPerson })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          const billId = data.bill.id;
+          const lastBill = {
+            type: 'split',
+            billId,
+            perPerson,
+            people,
+            total,
+            timestamp: new Date().toISOString()
+          };
+          localStorage.setItem('lastBill', JSON.stringify(lastBill));
+          displayLastBill();
+          showToast('Split bill saved to database ✅');
+        } else {
+          resultEl.textContent = 'Error saving to database.';
+        }
+      } catch (err) {
+        console.error('Error:', err);
+        resultEl.textContent = 'Server connection failed.';
+      }
 
       document.getElementById("totalAmountSplit").value = '';
       document.getElementById("peopleCount").value = '';
     }
 
-    function sendFullPay() {
+    async function sendFullPay() {
       const total = Number(document.getElementById("totalAmountFull").value);
       const resultEl = document.getElementById('result');
       resultEl.textContent = '';
@@ -275,12 +333,33 @@
         return; 
       }
 
-      const paymentId = Date.now();
-      
-      const payHtml = `Payment recorded — <strong>ID: ${paymentId}</strong> — Amount: <strong>$${total}</strong>` +
-        ` <button type="button" style="margin-left:8px;padding:6px 12px;border-radius:8px;border:none;background:#667eea;color:white;cursor:pointer;" onclick="copyText('Payment ID: ${paymentId} — Amount: $${total}')">Copy</button>` +
-        `<div style="margin-top:6px;color:#10b981;font-weight:600;">Payment recorded ✅</div>`;
-      showMessage(payHtml);
+      try {
+        const response = await fetch('http://localhost:3000/api/payments', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ totalAmount: total })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          const paymentId = data.payment.id;
+          const lastBill = {
+            type: 'full',
+            paymentId,
+            total,
+            timestamp: new Date().toISOString()
+          };
+          localStorage.setItem('lastBill', JSON.stringify(lastBill));
+          displayLastBill();
+          showToast('Full payment saved to database ✅');
+        } else {
+          resultEl.textContent = 'Error saving to database.';
+        }
+      } catch (err) {
+        console.error('Error:', err);
+        resultEl.textContent = 'Server connection failed.';
+      }
 
       document.getElementById("totalAmountFull").value = '';
     }
@@ -295,16 +374,6 @@
       }).catch(() => alert('Copy failed'));
     }
 
-    function showMessage(html) {
-      const p = document.getElementById('persistent');
-      const closeBtn = `<button class="msg-close" onclick="closeMessage()" aria-label="Close message">✕</button>`;
-      p.innerHTML = closeBtn + html;
-    }
-
-    function closeMessage() {
-      document.getElementById('persistent').textContent = '';
-    }
-
     function showToast(text) {
       const t = document.getElementById('toast');
       t.textContent = text;
@@ -316,6 +385,105 @@
         t.style.opacity = '0';
         setTimeout(() => { t.style.display = 'none'; t.style.transition = ''; }, 300);
       }, 2000);
+    }
+
+    async function clearBills() {
+      if (!confirm('Are you sure you want to clear all bills from the database?')) {
+        return;
+      }
+      
+      try {
+        const response = await fetch('http://localhost:3000/api/split-bills', {
+          method: 'DELETE'
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          showToast('All bills cleared from database ✅');
+          localStorage.removeItem('lastBill');
+          document.getElementById('persistent').innerHTML = '';
+          document.getElementById('billsList').innerHTML = '';
+        } else {
+          alert('Error clearing bills.');
+        }
+      } catch (err) {
+        console.error('Error:', err);
+        alert('Server connection failed.');
+      }
+    }
+
+    async function viewPastBills() {
+      const billsListEl = document.getElementById('billsList');
+      billsListEl.innerHTML = '<div style="text-align:center;padding:20px;color:#667eea;font-weight:600;">Loading...</div>';
+      
+      try {
+        const [splitResponse, paymentResponse] = await Promise.all([
+          fetch('http://localhost:3000/api/split-bills'),
+          fetch('http://localhost:3000/api/payments')
+        ]);
+        
+        const splitBills = await splitResponse.json();
+        const payments = await paymentResponse.json();
+        
+        if (splitBills.length === 0 && payments.length === 0) {
+          billsListEl.innerHTML = '<div style="text-align:center;padding:20px;color:#6b7280;font-weight:600;">No bills found in database</div>';
+          return;
+        }
+        
+        let html = '<h3 style="color:#667eea;margin-bottom:15px;font-size:20px;">Past Bills</h3>';
+        
+        // Display split bills
+        splitBills.forEach(bill => {
+          const date = new Date(bill.createdAt).toLocaleString();
+          html += `
+            <div class="bill-card">
+              <div class="bill-type-badge">Split Bill</div>
+              <div class="bill-row">
+                <span class="bill-label">Total Amount:</span>
+                <span class="bill-value">$${bill.totalAmount.toFixed(2)}</span>
+              </div>
+              <div class="bill-row">
+                <span class="bill-label">People:</span>
+                <span class="bill-value">${bill.peopleCount}</span>
+              </div>
+              <div class="bill-row">
+                <span class="bill-label">Per Person:</span>
+                <span class="bill-value">$${bill.perPerson}</span>
+              </div>
+              <div class="bill-row">
+                <span class="bill-label">Date:</span>
+                <span class="bill-value">${date}</span>
+              </div>
+              <button class="copy-btn" onclick="copyText('Split Bill ID: ${bill.id} - Per person: $${bill.perPerson}')">Copy Details</button>
+            </div>
+          `;
+        });
+        
+        // Display full payments
+        payments.forEach(payment => {
+          const date = new Date(payment.createdAt).toLocaleString();
+          html += `
+            <div class="bill-card">
+              <div class="bill-type-badge" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">Full Payment</div>
+              <div class="bill-row">
+                <span class="bill-label">Total Amount:</span>
+                <span class="bill-value">$${payment.totalAmount.toFixed(2)}</span>
+              </div>
+              <div class="bill-row">
+                <span class="bill-label">Date:</span>
+                <span class="bill-value">${date}</span>
+              </div>
+              <button class="copy-btn" onclick="copyText('Payment ID: ${payment.id} - Amount: $${payment.totalAmount}')">Copy Details</button>
+            </div>
+          `;
+        });
+        
+        billsListEl.innerHTML = html;
+      } catch (err) {
+        console.error('Error:', err);
+        billsListEl.innerHTML = '<div style="text-align:center;padding:20px;color:#ef4444;font-weight:600;">Server connection failed</div>';
+      }
     }
   </script>
 </body>

@@ -1,24 +1,9 @@
 {
-  "reviews": [
-    {
-      "id": 1764024082797,
-      "text": "good",
-      "rating": 3,
-      "name": "John Doe",
-      "createdAt": "2025-11-24T22:41:22.798Z"
-    }
-  ],
+  "reviews": [],
   "users": [],
   "rides": [],
   "emergencies": [],
-  "contacts": [
-    {
-      "id": 1764022941176,
-      "name": "renad",
-      "studentId": "445003859",
-      "email": "renad2016h@gmail.com",
-      "message": "i am writing a test",
-      "createdAt": "2025-11-24T22:22:21.176Z"
-    }
-  ]
+  "contacts": [],
+  "splitBills": [],
+  "payments": []
 }

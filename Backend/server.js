@@ -185,6 +185,97 @@ app.delete('/api/contact', async (req, res) => {
   }
 });
 
+// Split Bill endpoints
+app.get('/api/split-bills', async (req, res) => {
+  try {
+    const db = await loadDataStore();
+    res.json(db.splitBills || []);
+  } catch (err) {
+    console.error('Error loading split bills:', err);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+app.post('/api/split-bills', async (req, res) => {
+  try {
+    const { totalAmount, peopleCount, perPerson } = req.body;
+    
+    if (!totalAmount || !peopleCount || !perPerson) {
+      return res.status(400).json({ message: 'All fields are required' });
+    }
+
+    const db = await loadDataStore();
+    if (!db.splitBills) db.splitBills = [];
+
+    const newBill = {
+      id: Date.now(),
+      totalAmount: parseFloat(totalAmount),
+      peopleCount: parseInt(peopleCount),
+      perPerson: parseFloat(perPerson),
+      createdAt: new Date().toISOString()
+    };
+
+    db.splitBills.push(newBill);
+    await saveDataStore(db);
+
+    res.status(201).json({ success: true, bill: newBill });
+  } catch (err) {
+    console.error('Error saving split bill:', err);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+app.delete('/api/split-bills', async (req, res) => {
+  try {
+    const db = await loadDataStore();
+    db.splitBills = [];
+    db.payments = [];
+    await saveDataStore(db);
+    res.json({ success: true, message: 'All bills cleared.' });
+  } catch (err) {
+    console.error('Error clearing bills:', err);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// Payment endpoints
+app.get('/api/payments', async (req, res) => {
+  try {
+    const db = await loadDataStore();
+    res.json(db.payments || []);
+  } catch (err) {
+    console.error('Error loading payments:', err);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+app.post('/api/payments', async (req, res) => {
+  try {
+    const { totalAmount } = req.body;
+    
+    if (!totalAmount) {
+      return res.status(400).json({ message: 'Total amount is required' });
+    }
+
+    const db = await loadDataStore();
+    if (!db.payments) db.payments = [];
+
+    const newPayment = {
+      id: Date.now(),
+      totalAmount: parseFloat(totalAmount),
+      createdAt: new Date().toISOString()
+    };
+
+    db.payments.push(newPayment);
+    await saveDataStore(db);
+
+    res.status(201).json({ success: true, payment: newPayment });
+  } catch (err) {
+    console.error('Error saving payment:', err);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
 server.listen(3000, () => {
   console.log("Server is running on port 3000");
 });

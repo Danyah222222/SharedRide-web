@@ -17,7 +17,9 @@ async function initDataStore() {
       users: [],
       rides: [],
       emergencies: [],
-      contacts: []
+      contacts: [],
+      splitBills: [],
+      payments: []
     };
     await saveDataStore(init);
   }
@@ -35,7 +37,9 @@ async function loadDataStore() {
       users: [],
       rides: [],
       emergencies: [],
-      contacts: []
+      contacts: [],
+      splitBills: [],
+      payments: []
     };
     await saveDataStore(init);
     return init;
