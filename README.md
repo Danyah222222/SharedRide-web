@@ -15,12 +15,26 @@ This project is a student delivery website designed to help students move around
 This project was developed by a team of 7 members, each with a specific role:
 
 Sarah alotaibi/ Frontend Developer ,Designer
+
+
 Danyah bin doukhi/ Frontend Developer and APIs integration
+
+
 Renad Alyami/ Backend Developer , Database Management
+
+
 Lamia Alanazi/ Backend Developer , Database Management
+
+
 Noura Almedlej/ Testing
+
+
 Rama Alarbeed/Testing 
+
+
 Reham/Documentation
+
+
 
 *Next steps 
 
