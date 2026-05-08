@@ -19,4 +19,4 @@ jobs:
       run: npm install
 
     - name: Run Functional Tests
-      run: npx jest ride.test.js
+      run: npm test
