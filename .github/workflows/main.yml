@@ -1,23 +1,17 @@
-name: SonarCloud Analysis
+name: SharedRide CI Testing
 
-on:
-  push:
-    branches:
-      - main
+on: [push, pull_request]
 
 jobs:
-  sonarcloud:
+  test_project:
     runs-on: ubuntu-latest
-
     steps:
-      - uses: actions/checkout@v4
-
-      - name: SonarCloud Scan
-        uses: SonarSource/sonarqube-scan-action@v5.0.0
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      - uses: actions/checkout@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
         with:
-          args: >
-            -Dsonar.organization=og-sto
-            -Dsonar.projectKey=og-sto_gh-repo-clone-Danyah222222-SharedRide-web
-            -Dsonar.sources=.
+          node-version: '18'
+      - name: Install dependencies
+        run: npm install
+      - name: Run Project Tests
+        run: npm test
