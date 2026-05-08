@@ -16,7 +16,7 @@ const sharedRideSystem = {
     //Emergency Button :Notifying admin immediately in case of danger
     triggerEmergency: (isPressed) => isPressed ? "Alert Sent to Admin" : "System Secure",
     
-    //Rating & Reviews :Validating star ratings between 1 and 5
+    //Rating & Reviews :Validatiang star ratings between 1 and 5
     submitRating: (stars) => (stars >= 1 && stars <= 5) ? "Rating Saved" : "Invalid Rating"
 };
 
