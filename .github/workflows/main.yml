@@ -1,22 +1,21 @@
 name: SharedRide CI Testing
 
-on: [push, pull_request]
+on:
+  push:
+    branches:[main]
 
 jobs:
-  test_project:
+  build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      - name: Set up JDK
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-
-      - name: Install Dependencies
-        run: npm install
+          node-version: '17'
+          distribution: 'temurin'
 
       - name: Run Tests
-        run: npm test
+        run: mvn test
