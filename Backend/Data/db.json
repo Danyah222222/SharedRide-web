@@ -13,5 +13,11 @@
   "emergencies": [],
   "contacts": [],
   "splitBills": [],
-  "payments": []
+  "payments": [
+    {
+      "id": 1778518584876,
+      "totalAmount": 79.94,
+      "createdAt": "2026-05-11T16:56:24.876Z"
+    }
+  ]
 }
